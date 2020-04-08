@@ -41,5 +41,9 @@ namespace GroupOrganizer.Hubs
             //send username and message to all connected clients.
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
+
+        public async Task ReceiveGroup(string group) {
+            await Clients.All.SendAsync("ReceiveGroup", group);
+        }
     }
 }
