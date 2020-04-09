@@ -74,7 +74,7 @@
 
         .item {
             float: left;
-            dispaly: block;
+            display: block;
             padding: 10px;
             margin: 10px;
             background-color: #ccc;
@@ -138,14 +138,15 @@
         }
 
         .invisFormGroup {
-            padding:10px;
-            top:50%;
-            left:50%;
+            padding: 10px;
+            top: 50%;
+            left: 50%;
+            display: none;
             position: absolute;
             transform: translate(-50%, -50%);
-            background-color:black;
-            color:white;
-            
+            background-color: black;
+            color: white;
+            z-index: 2;
         }
 
 
@@ -166,10 +167,12 @@
             padding: 10px;
             top: 50%;
             left: 50%;
+            display: none;
             position: absolute;
             transform: translate(-50%, -50%);
             background-color: black;
             color: white;
+            z-index: 2;
         }
 
 
@@ -219,19 +222,19 @@
         <p>Footer</p>
     </div>
 
-    <div class="invisBackGroup" id="invisGroup">
+    <div class="invisBackGroup" id="invisGroup"></div>
         <div class="invisFormGroup" id="addGroupForm">
             <p>Enter new group:</p><input type="text" id="newGroupName" /><br />
             <input type="button" id="loadGroupBtn" value="Submit" style="margin-top:5px;" />
         </div>
-    </div>
+    
 
-    <div class="invisBackItem" id="invisItem">
+    <div class="invisBackItem" id="invisItem"></div>
         <div class="invisFormItem" id="addItemForm">
             <p>Enter new item:</p><input type="text" id="newItemName" /><br />
             <input type="button" id="loadItemBtn" value="Submit" style="margin-top:5px;" />
         </div>
-    </div>
+    
 
 
 </body>
@@ -241,14 +244,25 @@
 
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
         document.getElementById("invisItem").style.display = "none";
+        document.getElementById("addItemForm").style.display = "none";
     });
 
     document.getElementById("invisItem").addEventListener("click", function (event) {
         document.getElementById("invisItem").style.display = "none";
+        document.getElementById("addItemForm").style.display = "none";
     });
 
     document.getElementById("addItemBtn").addEventListener("click", function (event) {
+
+        newItem = {
+            itemName: "soccer",
+            texts: ["popular in europe", "150 yard field"]
+        }
+
+        newGroup.items.push(newItem);
+
         document.getElementById("invisItem").style.display = "block";
+        document.getElementById("addItemForm").style.display = "block";
     });
 
 
@@ -258,14 +272,17 @@
 
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
         document.getElementById("invisGroup").style.display = "none";
+        document.getElementById("addGroupForm").style.display = "none";
     });
 
     document.getElementById("invisGroup").addEventListener("click", function (event) {
         document.getElementById("invisGroup").style.display = "none";
+        document.getElementById("addGroupForm").style.display = "none";
     });
 
     document.getElementById("addGroupBtn").addEventListener("click", function (event) {
         document.getElementById("invisGroup").style.display = "block"; 
+        document.getElementById("addGroupForm").style.display = "block";
     });
    
 

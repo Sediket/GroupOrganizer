@@ -22,7 +22,6 @@ namespace GroupOrganizer.Hubs
                 if (tempUser == user)
                 {
                     user = tempUser;
-
                 }
                 else
                 {
