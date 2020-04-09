@@ -124,6 +124,55 @@
             margin-top: 10px;
             margin-right: 10px;
         }
+
+        .invisBackGroup {
+            background-color: rgba(0,0,0,0.5);
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            display: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .invisFormGroup {
+            padding:10px;
+            top:50%;
+            left:50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            background-color:black;
+            color:white;
+            
+        }
+
+
+
+        .invisBackItem {
+            background-color: rgba(0,0,0,0.5);
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            display: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .invisFormItem {
+            padding: 10px;
+            top: 50%;
+            left: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            color: white;
+        }
+
+
     </style>
 </head>
 <body>
@@ -131,9 +180,9 @@
     <div class="topnav">
         <div class="topnavContainer">
             <div>
-                <label for="cars">Choose a Group:</label>
+                <label for="groups">Choose a Group:</label>
 
-                <select id="cars">
+                <select id="groups">
                     <option value="volvo">Volvo</option>
                     <option value="saab">Saab</option>
                     <option value="mercedes">Mercedes</option>
@@ -143,7 +192,7 @@
         </div>
 
         <div class="addButton">
-            <input type="button" value="Add a Group">
+            <input type="button" value="Add a Group" id="addGroupBtn">
         </div>
     </div>
 
@@ -152,7 +201,7 @@
     <div class="content">
 
         <div class="addItem">
-            <input type="button" value="Add an Item">
+            <input type="button" value="Add an Item" id="addItemBtn">
         </div>
 
         <div class="item">
@@ -170,8 +219,105 @@
         <p>Footer</p>
     </div>
 
+    <div class="invisBackGroup" id="invisGroup">
+        <div class="invisFormGroup" id="addGroupForm">
+            <p>Enter new group:</p><input type="text" id="newGroupName" /><br />
+            <input type="button" id="loadGroupBtn" value="Submit" style="margin-top:5px;" />
+        </div>
+    </div>
+
+    <div class="invisBackItem" id="invisItem">
+        <div class="invisFormItem" id="addItemForm">
+            <p>Enter new item:</p><input type="text" id="newItemName" /><br />
+            <input type="button" id="loadItemBtn" value="Submit" style="margin-top:5px;" />
+        </div>
+    </div>
+
+
 </body>
 </html>
+
+<script>
+
+    document.getElementById("loadItemBtn").addEventListener("click", function (event) {
+        document.getElementById("invisItem").style.display = "none";
+    });
+
+    document.getElementById("invisItem").addEventListener("click", function (event) {
+        document.getElementById("invisItem").style.display = "none";
+    });
+
+    document.getElementById("addItemBtn").addEventListener("click", function (event) {
+        document.getElementById("invisItem").style.display = "block";
+    });
+
+
+
+
+
+
+    document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
+        document.getElementById("invisGroup").style.display = "none";
+    });
+
+    document.getElementById("invisGroup").addEventListener("click", function (event) {
+        document.getElementById("invisGroup").style.display = "none";
+    });
+
+    document.getElementById("addGroupBtn").addEventListener("click", function (event) {
+        document.getElementById("invisGroup").style.display = "block"; 
+    });
+   
+
+    var groupOrganizer = [{
+        groupName: "games",
+        items: [{
+            itemName: "diablo",
+            texts: ["rpg","fun with friends","coop"]
+        }, {
+            itemName: "Minecraft",
+            texts: ["coop","survival"],
+            }]
+    }, {
+        groupName: "movies",
+        items: [{
+            itemName: "star wars",
+            texts: ["sci-fy","action"],
+        }]
+    }]
+
+    newGroup = {
+        groupName: "sports",
+        items: []
+    }
+
+    newItem = {
+        itemName: "soccer",
+        texts:["popular in europe","150 yard field"]
+    }
+
+
+    newGroup.items.push(newItem);
+
+    groupOrganizer.push(newGroup);
+
+    
+
+
+    document.writeln(groupOrganizer[0].groupName);
+    document.writeln(groupOrganizer[0].items[0].itemName);
+    document.writeln(groupOrganizer[0].items[0].texts[2]);
+
+    var jsonString = JSON.stringify(groupOrganizer);
+
+    var unJSON = JSON.parse(jsonString)
+
+
+    document.writeln(jsonString);
+    document.writeln();
+    document.writeln(unJSON.length);
+
+</script>
 
 
 
