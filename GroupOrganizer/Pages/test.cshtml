@@ -239,7 +239,29 @@
 
 </body>
 </html>
+<script src="~/js/helpers.js">
+    //all return groupOrganizer
+    //function newGroupOgranizer()
+    //function addGroup(groupOrganizer, groupName)
+    //function  addItem(groupOrganizer, groupName, itemName, ownerName)
 
+
+    //function addText(groupOrganizer, groupName, itemName, userName, newText)
+    //add text only if locked first and:
+    //modifyingUser = user
+    //visibility = no
+    //owner = user
+    //locked = yes
+    //or
+    //modifyingUser = user
+    //visibility = yes
+    //locked = yes
+
+    //function lockItem(groupOrganizer, groupName, itemName,userName) //lock by any user if unlocked
+    //function unlockItem(groupOrganizer, groupName, itemName,userName) //modify only by modifying user
+    //function makeVisible(groupOrganizer, groupName, itemName, userName) //modify only by owner
+    //function makeVisible(groupOrganizer, groupName, itemName, userName) //modify only by owner
+</script>
 <script>
 
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
@@ -267,9 +289,6 @@
 
 
 
-
-
-
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
         document.getElementById("invisGroup").style.display = "none";
         document.getElementById("addGroupForm").style.display = "none";
@@ -284,55 +303,58 @@
         document.getElementById("invisGroup").style.display = "block"; 
         document.getElementById("addGroupForm").style.display = "block";
     });
-   
-
-    var groupOrganizer = [{
-        groupName: "games",
-        items: [{
-            itemName: "diablo",
-            texts: ["rpg","fun with friends","coop"]
-        }, {
-            itemName: "Minecraft",
-            texts: ["coop","survival"],
-            }]
-    }, {
-        groupName: "movies",
-        items: [{
-            itemName: "star wars",
-            texts: ["sci-fy","action"],
-        }]
-    }]
-
-    newGroup = {
-        groupName: "sports",
-        items: []
-    }
-
-    newItem = {
-        itemName: "soccer",
-        texts:["popular in europe","150 yard field"]
-    }
 
 
-    newGroup.items.push(newItem);
 
-    groupOrganizer.push(newGroup);
+    //var groupOrganizer = [{
+    //    groupName: "games",
+    //    items: [{
+    //        itemName: "diablo",
+    //        texts: ["rpg","fun with friends","coop"]
+    //    }, {
+    //        itemName: "Minecraft",
+    //        userName: "Brad",
+    //        texts: ["coop","survival"],
+    //        }]
+    //}, {
+    //    groupName: "movies",
+    //    items: [{
+    //        itemName: "star wars",
+    //        texts: ["sci-fy","action"],
+    //    }]
+    //}]
+
+    //newGroup = {
+    //    groupName: "sports",
+    //    items: []
+    //}
+
+    //newItem = {
+    //    itemName: "soccer",
+    //    texts:["popular in europe","150 yard field"]
+    //}
+
+
+    //newGroup.items.push(newItem);
+
+    //groupOrganizer.push(newGroup);
 
     
 
 
-    document.writeln(groupOrganizer[0].groupName);
-    document.writeln(groupOrganizer[0].items[0].itemName);
-    document.writeln(groupOrganizer[0].items[0].texts[2]);
+    //document.writeln(groupOrganizer[0].groupName);
+    //document.writeln(groupOrganizer[0].items[0].itemName);
+    //document.writeln(groupOrganizer[0].items[0].texts[2]);
 
-    var jsonString = JSON.stringify(groupOrganizer);
-
-    var unJSON = JSON.parse(jsonString)
+    //var jsonString = JSON.stringify(groupOrganizer);
 
 
-    document.writeln(jsonString);
-    document.writeln();
-    document.writeln(unJSON.length);
+    //var unJSON = JSON.parse(jsonString)
+
+
+    //document.writeln(jsonString);
+    //document.writeln();
+    //document.writeln(unJSON.length);
 
 </script>
 
