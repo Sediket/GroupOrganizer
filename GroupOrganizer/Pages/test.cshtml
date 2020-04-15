@@ -97,9 +97,7 @@
 
         /* Style the content */
         .content {
-            background-color: #ddd;
             padding: 10px;
-            height: 200px; /* Should be removed. Only for demonstration */
         }
 
         /* Style the footer */
@@ -201,7 +199,7 @@
 
 
 
-    <div class="content">
+    <div class="content" id="content">
 
         <div class="addItem">
             <input type="button" value="Add an Item" id="addItemBtn">
@@ -239,6 +237,7 @@
 
 </body>
 </html>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/helpers.js">
     //all return groupOrganizer
     //function newGroupOgranizer()
@@ -265,6 +264,27 @@
 <script>
 
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
+        var newItem = document.getElementById("newItemName").value;
+        var divItem = document.createElement("div");
+        var divItemTitle = document.createElement("div");
+
+        divItem.className = "item col-md-4";
+        divItemTitle.className = "itemTitle";
+        divItemTitle.innerHTML = newItem;
+        divItem.appendChild(divItemTitle);
+
+        var visibleBtn = document.createElement("input");
+        visibleBtn.type = "checkbox";
+        divItem.appendChild(visibleBtn);
+        var addTextBtn = document.createElement("button");
+        addTextBtn.innerHTML = "Add Text";
+        addTextBtn.addEventListener("click", function (event) {
+            var itemText = document.createElement("div");
+            itemText.textContent = "Hello";
+            divItem.appendChild(itemText);
+        });
+        divItem.appendChild(addTextBtn);
+        document.getElementById("content").appendChild(divItem);
         document.getElementById("invisItem").style.display = "none";
         document.getElementById("addItemForm").style.display = "none";
     });
@@ -275,23 +295,22 @@
     });
 
     document.getElementById("addItemBtn").addEventListener("click", function (event) {
-
-        newItem = {
-            itemName: "soccer",
-            texts: ["popular in europe", "150 yard field"]
-        }
-
-        newGroup.items.push(newItem);
-
         document.getElementById("invisItem").style.display = "block";
         document.getElementById("addItemForm").style.display = "block";
     });
 
-
-
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
+        var newGroup = document.getElementById("newGroupName").value;
+        var option = document.createElement("option");
+        option.textContent = newGroup;
+        document.getElementById("groups").appendChild(option);
+
         document.getElementById("invisGroup").style.display = "none";
         document.getElementById("addGroupForm").style.display = "none";
+        connection.invoke("SendMessage", user, newGroup).catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
     });
 
     document.getElementById("invisGroup").addEventListener("click", function (event) {

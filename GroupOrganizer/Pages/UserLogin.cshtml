@@ -1,0 +1,42 @@
+﻿@page
+@model GroupOrganizer.Pages.UserLoginModel
+@{
+    ViewData["Title"] = "login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .main {
+            width: 600px;
+            margin-right: auto;
+            margin-left: auto;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .username {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="main">
+        <h2>Sign In</h2>
+        <div class="username" data-validate="Please enter username">
+            <input class="input100" type="text" name="username" placeholder="Enter Your Name">
+            <span class="focus-input100"></span>
+        </div>
+
+        <div class="container-login100-form-btn">
+            <button class="login100-form-btn">
+                Sign in
+            </button>
+        </div>
+    </div>
+</body>
+</html>

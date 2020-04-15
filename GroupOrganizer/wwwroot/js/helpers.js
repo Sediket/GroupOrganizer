@@ -1,6 +1,6 @@
 ﻿//Examples:
 
-//GroupOrganizer = newGroupOgranizer();
+GroupOrganizer = newGroupOgranizer();
 
 //GroupOrganizer = addGroup(GroupOrganizer, "sports");
 //GroupOrganizer = addGroup(GroupOrganizer, "games");
@@ -28,7 +28,6 @@
 
 ////show json
 //document.writeln(jsonString2);
-
 
 
 
