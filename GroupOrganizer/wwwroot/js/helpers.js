@@ -169,3 +169,18 @@ function makeinVisible(groupOrganizer, groupName, itemName, userName) {
     return groupOrganizer;
 }
 
+//return the owner of an item
+//owner = getOwner(GroupOrganizer, "sports", "soccer");
+function getOwner(groupOrganizer, groupName, itemName) {
+    var tempOwner;
+    for (var i = 0; i < groupOrganizer.length; i++) {
+        if (groupOrganizer[i].groupName == groupName) {
+            for (var j = 0; j < groupOrganizer[i].items.length; j++) {
+                if (groupOrganizer[i].items[j].itemName == itemName) {
+                    tempOwner = groupOrganizer[i].items[j].ownerName;
+                }
+            }
+        }
+    }
+    return tempOwner;
+}
