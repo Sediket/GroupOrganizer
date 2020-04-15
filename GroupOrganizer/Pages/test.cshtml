@@ -273,16 +273,35 @@
         divItemTitle.innerHTML = newItem;
         divItem.appendChild(divItemTitle);
 
+        // creating the visibility checkbox
+        var visibleLbl = document.createElement("label");
+        visibleLbl.textContent = "Make visible? ";
         var visibleBtn = document.createElement("input");
         visibleBtn.type = "checkbox";
+
+        // adding event listener for visibility checkbox so the user can choose whether the item is visible for other or not.
+        visibleBtn.addEventListener("change", function () {
+            if (this.checked) {
+                divItem.style.display = "none";
+            } else {
+                divItem.style.display = "block";
+            }
+        });
+        divItem.appendChild(visibleLbl);
         divItem.appendChild(visibleBtn);
+
+        // creating the Add Text button for each item
         var addTextBtn = document.createElement("button");
+        var textInput = document.createElement("input");
+        textInput.type = "text";
         addTextBtn.innerHTML = "Add Text";
+        // Adding event listener for Add Text button so the user can add text to the item
         addTextBtn.addEventListener("click", function (event) {
             var itemText = document.createElement("div");
-            itemText.textContent = "Hello";
+            itemText.textContent = textInput.value;
             divItem.appendChild(itemText);
         });
+        divItem.appendChild(textInput);
         divItem.appendChild(addTextBtn);
         document.getElementById("content").appendChild(divItem);
         document.getElementById("invisItem").style.display = "none";
