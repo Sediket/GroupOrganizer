@@ -24,10 +24,10 @@ GroupOrganizer = newGroupOgranizer();
 //GroupOrganizer = makeinVisible(GroupOrganizer, "sports", "soccer", "brad");
 
 ////turn to json
-//var jsonString2 = JSON.stringify(GroupOrganizer);
+var jsonString2 = JSON.stringify(GroupOrganizer);
 
 ////show json
-//document.writeln(jsonString2);
+document.writeln(jsonString2);
 
 
 

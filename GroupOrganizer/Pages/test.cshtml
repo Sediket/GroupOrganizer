@@ -184,10 +184,7 @@
                 <label for="groups">Choose a Group:</label>
 
                 <select id="groups">
-                    <option value="volvo">Volvo</option>
-                    <option value="saab">Saab</option>
-                    <option value="mercedes">Mercedes</option>
-                    <option value="audi">Audi</option>
+                 
                 </select>
             </div>
         </div>
@@ -198,20 +195,22 @@
     </div>
 
 
+    <div id="main">
+        <div class="content" id="content">
 
-    <div class="content" id="content">
+            <div class="addItem">
+                <input type="button" value="Add an Item" id="addItemBtn">
+            </div>
 
-        <div class="addItem">
-            <input type="button" value="Add an Item" id="addItemBtn">
-        </div>
+            <div class="item">
+                <div class="itemTitle">games</div>
+                <div class="itemItem">diablo</div>
+                <div class="itemItem">diablo</div>
+            </div>
+            <div class="item">
+                hi2
+            </div>
 
-        <div class="item">
-            <div class="itemTitle">games</div>
-            <div class="itemItem">diablo</div>
-            <div class="itemItem">diablo</div>
-        </div>
-        <div class="item">
-            hi2
         </div>
 
     </div>
@@ -273,6 +272,7 @@
         divItemTitle.innerHTML = newItem;
         divItem.appendChild(divItemTitle);
 
+
         // creating the visibility checkbox
         var visibleLbl = document.createElement("label");
         visibleLbl.textContent = "Make visible? ";
@@ -300,10 +300,12 @@
             var itemText = document.createElement("div");
             itemText.textContent = textInput.value;
             divItem.appendChild(itemText);
+            GroupOrganizer = addText(GroupOrganizer, "test" , divItem, "test", itemText);
         });
         divItem.appendChild(textInput);
         divItem.appendChild(addTextBtn);
         document.getElementById("content").appendChild(divItem);
+        GroupOrganizer = addItem(GroupOrganizer, divItem, divItemTitle, "brad");
         document.getElementById("invisItem").style.display = "none";
         document.getElementById("addItemForm").style.display = "none";
     });
@@ -319,13 +321,25 @@
     });
 
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
+        var divItems = document.getElementById("main").childNodes;
         var newGroup = document.getElementById("newGroupName").value;
         var option = document.createElement("option");
         option.textContent = newGroup;
         document.getElementById("groups").appendChild(option);
 
+        document.getElementById("groups").value = option.value;
+
+        var contentItem = document.createElement("div");
+        document.getElementById("main").appendChild(contentItem);
+
+        var addItemBtn = document.createElement("button");
+        addItemBtn.textContent = "Add Item";
+        contentItem.appendChild(addItemBtn);
+
+
         document.getElementById("invisGroup").style.display = "none";
         document.getElementById("addGroupForm").style.display = "none";
+
         connection.invoke("SendMessage", user, newGroup).catch(function (err) {
             return console.error(err.toString());
         });
