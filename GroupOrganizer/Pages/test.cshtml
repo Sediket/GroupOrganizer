@@ -217,12 +217,14 @@
             <div id="itemArea">
 
                 <div class="item">
-                    <div class="itemTitle">games</div>
-                    <div class="itemItem">diablo</div>
-                    <div class="itemItem">diablo</div>
+                    <div class="itemTitle">Diablo</div>
+                    <div class="itemItem">rpg</div>
+                    <div class="itemItem">coop</div>
                 </div>
                 <div class="item">
-                    hi2
+                    <div class="itemTitle">minecraft</div>
+                    <div class="itemItem">blocky</div>
+                    <div class="itemItem">survival</div>
                 </div>
 
             </div>
@@ -243,10 +245,11 @@
     
 
     <div class="invisBackItem" id="invisItem"></div>
-        <div class="invisFormItem" id="addItemForm">
-            <p>Enter new item:</p><input type="text" id="newItemName" /><br />
-            <input type="button" id="loadItemBtn" value="Submit" style="margin-top:5px;" />
-        </div>
+    <div class="invisFormItem" id="addItemForm">
+        <p>Enter new item:</p><input type="text" id="newItemName" /><br />
+        <p id="newItemMessage"></p>
+        <input type="button" id="loadItemBtn" value="Submit" style="margin-top:5px;" />
+    </div>
     
 
 
@@ -304,7 +307,14 @@
             //value doesn't not exist add:
             //verify the group box is not empty
             if (!document.getElementById("newGroupName").value == "") {
-                var contentItem = document.getElementById("itemArea");
+                //unhide item area:
+                var contentDiv = document.getElementById("content");
+                if (contentDiv.style.display = "none") {
+                    contentDiv.style.display = "block";
+                }
+
+                //var contentItem = document.getElementById("itemArea");
+
                 var newGroup = document.getElementById("newGroupName").value;
                 var option = document.createElement("option");
                 option.textContent = newGroup;
@@ -316,6 +326,7 @@
                 var jsonString2 = JSON.stringify(GroupOrganizer);
                 console.log(jsonString2);
 
+                //hide add group text box
                 document.getElementById("invisGroup").style.display = "none";
                 document.getElementById("addGroupForm").style.display = "none";
 
@@ -335,83 +346,104 @@
 
     //event listener for submit button for loadItem
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
-
-        //gather varibles
-        var username = document.getElementById("username").value; //username from text field
-        var newItem = document.getElementById("newItemName").value; //itemname from text field
-        var group = document.getElementById("groups"); //groups drop down
-        var currentGroup = group.options[group.selectedIndex].text //selected item in group drop down
-
-        //new divItem and title
-        var divItem = document.createElement("div"); //new divItem
-        var divItemTitle = document.createElement("div"); //new divTitle for new item
-        divItem.className = "item col-md-4";
-        divItemTitle.className = "itemTitle";
-        divItemTitle.innerHTML = newItem;
-        divItem.appendChild(divItemTitle);
-
-
-        // creating the visibility checkbox
-        var visibleLbl = document.createElement("label");
-        visibleLbl.textContent = "Make visible? ";
-        var visibleBtn = document.createElement("input");
-        visibleBtn.type = "checkbox";
-
-        // adding event listener for visibility checkbox so the user can choose whether the item is visible for other or not.
-        visibleBtn.addEventListener("change", function () {
-            if (this.checked) {
-                divItem.style.display = "none";
+        //check that the text field is not empty
+        if (!document.getElementById("newItemName").value == "") {
+            //check that the item doesn't exist
+            if (checkItemExists(document.getElementById("newItemName").value)) {
+                //already exists:
+                document.getElementById("newItemMessage").style.color = "red";
+                document.getElementById("newItemMessage").innerHTML = "Already Exists";
             } else {
-                divItem.style.display = "block";
-            }
-        });
-        divItem.appendChild(visibleLbl);
-        divItem.appendChild(visibleBtn);
+                //doesn't exists:
+                //gather varibles
+                var username = document.getElementById("username").value; //username from text field
+                var newItem = document.getElementById("newItemName").value; //itemname from text field
+                var group = document.getElementById("groups"); //groups drop down
+                var currentGroup = group.options[group.selectedIndex].text //selected item in group drop down
 
-        var lockBtn = document.createElement("button");
-        lockBtn.textContent = "Lock Item?";
 
-        lockBtn.addEventListener("click", function () {
-            var lockedLbl = document.createElement("label");
-            lockedLbl.textContent = "This items is being edited by " + username;
+                //new divItem and title
+                var divItem = document.createElement("div"); //new divItem
+                var divItemTitle = document.createElement("div"); //new divTitle for new item
+                divItem.className = "item col-md-4";
+                divItemTitle.className = "itemTitle";
+                divItemTitle.innerHTML = newItem;
+                divItem.appendChild(divItemTitle);
 
-            divItem.appendChild(lockedLbl);
 
-            GroupOrganizer = lockItem(GroupOrganizer, "sports", "soccer", username);
+                // creating the visibility checkbox
+                var visibleLbl = document.createElement("label");
+                visibleLbl.textContent = "Make visible? ";
+                var visibleBtn = document.createElement("input");
+                visibleBtn.type = "checkbox";
 
-        });
+                // adding event listener for visibility checkbox so the user can choose whether the item is visible for other or not.
+                visibleBtn.addEventListener("change", function () {
+                    if (this.checked) {
+                        divItem.style.display = "none";
+                    } else {
+                        divItem.style.display = "block";
+                    }
+                });
+                divItem.appendChild(visibleLbl);
+                divItem.appendChild(visibleBtn);
 
-        divItem.appendChild(lockBtn);
+                var lockBtn = document.createElement("button");
+                lockBtn.textContent = "Lock Item?";
 
-        // creating the Add Text button for each item
-        var addTextBtn = document.createElement("button");
-        var textInput = document.createElement("input");
-        textInput.type = "text";
-        addTextBtn.innerHTML = "Add Text";
-        // Adding event listener for Add Text button so the user can add text to the item
-        addTextBtn.addEventListener("click", function (event) {
-            var itemText = document.createElement("div");
-            itemText.textContent = textInput.value;
-            divItem.appendChild(itemText);
+                lockBtn.addEventListener("click", function () {
+                    var lockedLbl = document.createElement("label");
+                    lockedLbl.textContent = "This items is being edited by " + username;
 
-            //lock the item so that the user can modify the item:
-            //add the text to the item:
-            GroupOrganizer = addText(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username, itemText.textContent);
-            //print it out:
-            var jsonString2 = JSON.stringify(GroupOrganizer);
-            console.log(jsonString2);
-        });
-        divItem.appendChild(textInput);
-        divItem.appendChild(addTextBtn);
-        document.getElementById("content").appendChild(divItem);
+                    divItem.appendChild(lockedLbl);
 
-         GroupOrganizer = addItem(GroupOrganizer, currentGroup, divItemTitle.innerHTML, username);
-        //print it out:
-        var jsonString2 = JSON.stringify(GroupOrganizer);
-        console.log(jsonString2);
+                    GroupOrganizer = lockItem(GroupOrganizer, "sports", "soccer", username);
 
-        document.getElementById("invisItem").style.display = "none";
-        document.getElementById("addItemForm").style.display = "none";
+                });
+
+                divItem.appendChild(lockBtn);
+
+                // creating the Add Text button for each item
+                var addTextBtn = document.createElement("button");
+                var textInput = document.createElement("input");
+                textInput.type = "text";
+                addTextBtn.innerHTML = "Add Text";
+                // Adding event listener for Add Text button so the user can add text to the item
+                addTextBtn.addEventListener("click", function (event) {
+                    var itemText = document.createElement("div");
+                    itemText.textContent = textInput.value;
+                    divItem.appendChild(itemText);
+
+                    //lock the item so that the user can modify the item:
+                    //add the text to the item:
+                    GroupOrganizer = addText(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username, itemText.textContent);
+                    //print it out:
+                    var jsonString2 = JSON.stringify(GroupOrganizer);
+                    console.log(jsonString2);
+                });
+                divItem.appendChild(textInput);
+                divItem.appendChild(addTextBtn);
+
+                //add to the itemArea
+                document.getElementById("itemArea").appendChild(divItem);
+
+                GroupOrganizer = addItem(GroupOrganizer, currentGroup, divItemTitle.innerHTML, username);
+                //print it out:
+                var jsonString2 = JSON.stringify(GroupOrganizer);
+                console.log(jsonString2);
+
+                document.getElementById("invisItem").style.display = "none";
+                document.getElementById("addItemForm").style.display = "none";
+            } //end of if check exists
+
+
+        } else {
+            //text box is empty:
+            document.getElementById("newItemMessage").style.color = "red";
+            document.getElementById("newItemMessage").innerHTML = "Please enter a value";
+        }
+
+        
     });
 
     document.getElementById("invisItem").addEventListener("click", function (event) {
@@ -426,6 +458,8 @@
             alert("Please select or add group.");
             event.preventDefault();
         } else {
+            document.getElementById("newItemMessage").innerHTML = ""; //empty message text under the textfield
+            document.getElementById("newItemName").value = ""; //empty add item text field
             document.getElementById("invisItem").style.display = "block";
             document.getElementById("addItemForm").style.display = "block";
         }
@@ -443,11 +477,8 @@
     document.getElementById("addGroupBtn").addEventListener("click", function (event) {
         document.getElementById("newGroupMessage").innerHTML = ""; //empty message text under the textfield
         document.getElementById("newGroupName").value = ""; //empty add group text field
-        var contentDiv = document.getElementById("content");
 
-        if (contentDiv.style.display = "none") {
-            contentDiv.style.display = "block";
-        }
+        //show add group text box:
         document.getElementById("invisGroup").style.display = "block"; 
         document.getElementById("addGroupForm").style.display = "block";
     });

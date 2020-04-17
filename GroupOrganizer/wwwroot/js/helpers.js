@@ -61,6 +61,19 @@ function checkGroupExistsDD(DD,newText) {
     return false;
 }
 
+//check if the item already exists:
+function checkItemExists(newText) {
+    var items = document.getElementById("itemArea").children;
+    
+    for (var i = 0; i < items.length; i++) {
+        var divTitle = items[i].children[0].innerHTML;
+        if (divTitle == newText) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 //check if group exists in data struture:
 function checkGroupExistsDS(groupOrganizer, groupName) {
