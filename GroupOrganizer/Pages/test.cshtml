@@ -195,12 +195,13 @@
     </div>
 
 
-    <div id="main">
-        <div class="content" id="content">
+    <div class="content" id="content">
+        <label id="jsonTest"></label>
+        <div class="addItem">
+            <input type="button" value="Add an Item" id="addItemBtn">
+        </div>
 
-            <div class="addItem">
-                <input type="button" value="Add an Item" id="addItemBtn">
-            </div>
+        <div id="itemArea">
 
             <div class="item">
                 <div class="itemTitle">games</div>
@@ -306,6 +307,10 @@
         divItem.appendChild(addTextBtn);
         document.getElementById("content").appendChild(divItem);
         GroupOrganizer = addItem(GroupOrganizer, divItem, divItemTitle, "brad");
+
+        var jsonString2 = JSON.stringify(GroupOrganizer);
+        console.log(jsonString2);
+
         document.getElementById("invisItem").style.display = "none";
         document.getElementById("addItemForm").style.display = "none";
     });
@@ -321,20 +326,13 @@
     });
 
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
-        var divItems = document.getElementById("main").childNodes;
+        var contentItem = document.getElementById("itemArea");
         var newGroup = document.getElementById("newGroupName").value;
         var option = document.createElement("option");
         option.textContent = newGroup;
         document.getElementById("groups").appendChild(option);
 
         document.getElementById("groups").value = option.value;
-
-        var contentItem = document.createElement("div");
-        document.getElementById("main").appendChild(contentItem);
-
-        var addItemBtn = document.createElement("button");
-        addItemBtn.textContent = "Add Item";
-        contentItem.appendChild(addItemBtn);
 
 
         document.getElementById("invisGroup").style.display = "none";
@@ -343,6 +341,7 @@
         connection.invoke("SendMessage", user, newGroup).catch(function (err) {
             return console.error(err.toString());
         });
+
         event.preventDefault();
     });
 
