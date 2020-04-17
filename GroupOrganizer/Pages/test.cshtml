@@ -237,6 +237,7 @@
     <div class="invisBackGroup" id="invisGroup"></div>
         <div class="invisFormGroup" id="addGroupForm">
             <p>Enter new group:</p><input type="text" id="newGroupName" /><br />
+            <p id="newGroupMessage"></p>
             <input type="button" id="loadGroupBtn" value="Submit" style="margin-top:5px;" />
         </div>
     
@@ -277,7 +278,7 @@
 </script>
 <script>
 
-
+    //event listener for signin button
     document.getElementById("signIn").addEventListener("click", function (event) {
         var username = document.getElementById("username").value;
 
@@ -293,21 +294,61 @@
         }
     });
 
+
+    document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
+        //verify the newGroup doesn't already exist:
+        if (checkGroupExistsDD("groups", document.getElementById("newGroupName").value)) {
+            document.getElementById("newGroupMessage").style.color = "red";
+            document.getElementById("newGroupMessage").innerHTML = "Value already exists, enter a new one";
+        } else {
+            //value doesn't not exist add:
+            //verify the group box is not empty
+            if (!document.getElementById("newGroupName").value == "") {
+                var contentItem = document.getElementById("itemArea");
+                var newGroup = document.getElementById("newGroupName").value;
+                var option = document.createElement("option");
+                option.textContent = newGroup;
+                document.getElementById("groups").appendChild(option);
+
+                document.getElementById("groups").value = option.value;
+
+                GroupOrganizer = addGroup(GroupOrganizer, option.value);
+                var jsonString2 = JSON.stringify(GroupOrganizer);
+                console.log(jsonString2);
+
+                document.getElementById("invisGroup").style.display = "none";
+                document.getElementById("addGroupForm").style.display = "none";
+
+                connection.invoke("SendMessage", user, newGroup).catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+                event.preventDefault();
+            } else {
+                //please enter a value message
+                document.getElementById("newGroupMessage").style.color = "red";
+                document.getElementById("newGroupMessage").innerHTML = "Please enter a value";
+            }
+        }
+    });
+
+
+    //event listener for submit button for loadItem
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
-        var username = document.getElementById("username").value;
-        var newItem = document.getElementById("newItemName").value;
-        var group = document.getElementById("groups");
-        var currentGroup = group.options[group.selectedIndex].text
-        var divItem = document.createElement("div");
-        var divItemTitle = document.createElement("div");
 
-       
+        //gather varibles
+        var username = document.getElementById("username").value; //username from text field
+        var newItem = document.getElementById("newItemName").value; //itemname from text field
+        var group = document.getElementById("groups"); //groups drop down
+        var currentGroup = group.options[group.selectedIndex].text //selected item in group drop down
 
+        //new divItem and title
+        var divItem = document.createElement("div"); //new divItem
+        var divItemTitle = document.createElement("div"); //new divTitle for new item
         divItem.className = "item col-md-4";
         divItemTitle.className = "itemTitle";
         divItemTitle.innerHTML = newItem;
         divItem.appendChild(divItemTitle);
-
 
 
         // creating the visibility checkbox
@@ -392,28 +433,7 @@
 
     });
 
-    document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
-        var contentItem = document.getElementById("itemArea");
-        var newGroup = document.getElementById("newGroupName").value;
-        var option = document.createElement("option");
-        option.textContent = newGroup;
-        document.getElementById("groups").appendChild(option);
 
-        document.getElementById("groups").value = option.value;
-
-        GroupOrganizer = addGroup(GroupOrganizer, option.value);
-        var jsonString2 = JSON.stringify(GroupOrganizer);
-        console.log(jsonString2);
-
-        document.getElementById("invisGroup").style.display = "none";
-        document.getElementById("addGroupForm").style.display = "none";
-
-        connection.invoke("SendMessage", user, newGroup).catch(function (err) {
-            return console.error(err.toString());
-        });
-
-        event.preventDefault();
-    });
 
     document.getElementById("invisGroup").addEventListener("click", function (event) {
         document.getElementById("invisGroup").style.display = "none";
@@ -421,6 +441,8 @@
     });
 
     document.getElementById("addGroupBtn").addEventListener("click", function (event) {
+        document.getElementById("newGroupMessage").innerHTML = ""; //empty message text under the textfield
+        document.getElementById("newGroupName").value = ""; //empty add group text field
         var contentDiv = document.getElementById("content");
 
         if (contentDiv.style.display = "none") {

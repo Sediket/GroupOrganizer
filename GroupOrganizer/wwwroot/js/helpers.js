@@ -36,6 +36,7 @@ function newGroupOgranizer() {
     return groupOrganizer;
 }
 
+//add new group
 function addGroup(groupOrganizer, groupName) {
 
     newGroup = {
@@ -46,6 +47,35 @@ function addGroup(groupOrganizer, groupName) {
 
     return groupOrganizer;
 }
+
+
+//check if group exists in dropdown - pass in dropdown id
+function checkGroupExistsDD(DD,newText) {
+    var dropDownItems = document.getElementById(DD), item, i;
+
+    for (i = 0; i < dropDownItems.length; i++) {
+        if (dropDownItems[i].value == newText) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//check if group exists in data struture:
+function checkGroupExistsDS(groupOrganizer, groupName) {
+
+    for (var i = 0; i < groupOrganizer.length; i++) {
+        if (groupOrganizer[i].groupName == groupName) {
+            //found
+            return true;
+        }
+    }
+    //was not found
+    return false;
+}
+
+
 
 function addItem(groupOrganizer, groupName, itemName, ownerName) {
     
