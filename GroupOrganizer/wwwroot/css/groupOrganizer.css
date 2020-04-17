@@ -1,0 +1,161 @@
+﻿* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Style the top navigation bar */
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+}
+
+
+.test {
+}
+
+
+.topnavContainer {
+    display: block;
+}
+
+/* Style the topnav links */
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.topnav label {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.topnav select, option {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    margin-top: 10px;
+    padding: 5px 16px;
+    text-decoration: none;
+    background-color: #333;
+}
+
+/* Change color on hover */
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.item {
+    float: left;
+    display: block;
+    padding: 10px;
+    margin: 10px;
+    background-color: #ccc;
+    border: 1px solid;
+}
+
+.itemTitle {
+    text-align: center;
+    padding: 3px;
+    background-color: #bbb;
+    border-bottom: 1px solid;
+}
+
+.itemItem {
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+}
+
+/* Style the content */
+.content {
+    padding: 10px;
+}
+
+/* Style the footer */
+.footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+}
+
+.addButton {
+    float: right;
+    display: block;
+}
+
+.addItem {
+    float: left;
+    display: block;
+    width: 100%;
+}
+
+.addButton input {
+    height: 30px;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.invisBackGroup {
+    background-color: rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.invisFormGroup {
+    padding: 10px;
+    top: 50%;
+    left: 50%;
+    display: none;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    color: white;
+    z-index: 2;
+}
+
+
+
+.invisBackItem {
+    background-color: rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.invisFormItem {
+    padding: 10px;
+    top: 50%;
+    left: 50%;
+    display: none;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    color: white;
+    z-index: 2;
+}
