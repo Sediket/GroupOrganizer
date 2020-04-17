@@ -177,43 +177,57 @@
     </style>
 </head>
 <body>
-
-    <div class="topnav">
-        <div class="topnavContainer">
-            <div>
-                <label for="groups">Choose a Group:</label>
-
-                <select id="groups">
-                 
-                </select>
-            </div>
+    <div id="login">
+        <h2>Sign In</h2>
+        <div class="username" data-validate="Please enter username">
+            <input class="input100" type="text" name="username" placeholder="Enter Your Name" id="username">
+            <span class="focus-input100"></span>
         </div>
 
-        <div class="addButton">
-            <input type="button" value="Add a Group" id="addGroupBtn">
+        <div class="container-login100-form-btn">
+            <button class="login100-form-btn" id="signIn">
+                Sign in
+            </button>
         </div>
     </div>
+    <div id="main" style="display:none">
 
+        <div class="topnav">
+            <div class="topnavContainer">
+                <div>
+                    <label for="groups">Choose a Group:</label>
 
-    <div class="content" id="content">
-        <label id="jsonTest"></label>
-        <div class="addItem">
-            <input type="button" value="Add an Item" id="addItemBtn">
-        </div>
-
-        <div id="itemArea">
-
-            <div class="item">
-                <div class="itemTitle">games</div>
-                <div class="itemItem">diablo</div>
-                <div class="itemItem">diablo</div>
-            </div>
-            <div class="item">
-                hi2
+                    <select id="groups">
+                    </select>
+                </div>
             </div>
 
+            <div class="addButton">
+                <input type="button" value="Add a Group" id="addGroupBtn">
+            </div>
         </div>
 
+
+        <div class="content" id="content" style="display: none">
+            <label id="jsonTest"></label>
+            <div class="addItem">
+                <input type="button" value="Add an Item" id="addItemBtn">
+            </div>
+
+            <div id="itemArea">
+
+                <div class="item">
+                    <div class="itemTitle">games</div>
+                    <div class="itemItem">diablo</div>
+                    <div class="itemItem">diablo</div>
+                </div>
+                <div class="item">
+                    hi2
+                </div>
+
+            </div>
+
+        </div>
     </div>
 
     <div class="footer">
@@ -263,15 +277,37 @@
 </script>
 <script>
 
+
+    document.getElementById("signIn").addEventListener("click", function (event) {
+        var username = document.getElementById("username").value;
+
+        var loginDiv = document.getElementById("login");
+        var mainDiv = document.getElementById("main");
+
+        if (username == "") {
+            alert("Please enter username.");
+            event.preventDefault();
+        } else {
+            loginDiv.style.display = "none";
+            mainDiv.style.display = "block";
+        }
+    });
+
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
+        var username = document.getElementById("username").value;
         var newItem = document.getElementById("newItemName").value;
+        var group = document.getElementById("groups");
+        var currentGroup = group.options[group.selectedIndex].text
         var divItem = document.createElement("div");
         var divItemTitle = document.createElement("div");
+
+       
 
         divItem.className = "item col-md-4";
         divItemTitle.className = "itemTitle";
         divItemTitle.innerHTML = newItem;
         divItem.appendChild(divItemTitle);
+
 
 
         // creating the visibility checkbox
@@ -291,6 +327,21 @@
         divItem.appendChild(visibleLbl);
         divItem.appendChild(visibleBtn);
 
+        var lockBtn = document.createElement("button");
+        lockBtn.textContent = "Lock Item?";
+
+        lockBtn.addEventListener("click", function () {
+            var lockedLbl = document.createElement("label");
+            lockedLbl.textContent = "This items is being edited by " + username;
+
+            divItem.appendChild(lockedLbl);
+
+            GroupOrganizer = lockItem(GroupOrganizer, "sports", "soccer", username);
+
+        });
+
+        divItem.appendChild(lockBtn);
+
         // creating the Add Text button for each item
         var addTextBtn = document.createElement("button");
         var textInput = document.createElement("input");
@@ -301,13 +352,20 @@
             var itemText = document.createElement("div");
             itemText.textContent = textInput.value;
             divItem.appendChild(itemText);
-            GroupOrganizer = addText(GroupOrganizer, "test" , divItem, "test", itemText);
+
+            //lock the item so that the user can modify the item:
+            //add the text to the item:
+            GroupOrganizer = addText(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username, itemText.textContent);
+            //print it out:
+            var jsonString2 = JSON.stringify(GroupOrganizer);
+            console.log(jsonString2);
         });
         divItem.appendChild(textInput);
         divItem.appendChild(addTextBtn);
         document.getElementById("content").appendChild(divItem);
-        GroupOrganizer = addItem(GroupOrganizer, divItem, divItemTitle, "brad");
 
+         GroupOrganizer = addItem(GroupOrganizer, currentGroup, divItemTitle.innerHTML, username);
+        //print it out:
         var jsonString2 = JSON.stringify(GroupOrganizer);
         console.log(jsonString2);
 
@@ -321,8 +379,17 @@
     });
 
     document.getElementById("addItemBtn").addEventListener("click", function (event) {
-        document.getElementById("invisItem").style.display = "block";
-        document.getElementById("addItemForm").style.display = "block";
+        var group = document.getElementById("groups");
+
+        if (group.value == "") {
+            alert("Please select or add group.");
+            event.preventDefault();
+        } else {
+            document.getElementById("invisItem").style.display = "block";
+            document.getElementById("addItemForm").style.display = "block";
+        }
+
+
     });
 
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
@@ -334,6 +401,9 @@
 
         document.getElementById("groups").value = option.value;
 
+        GroupOrganizer = addGroup(GroupOrganizer, option.value);
+        var jsonString2 = JSON.stringify(GroupOrganizer);
+        console.log(jsonString2);
 
         document.getElementById("invisGroup").style.display = "none";
         document.getElementById("addGroupForm").style.display = "none";
@@ -351,6 +421,11 @@
     });
 
     document.getElementById("addGroupBtn").addEventListener("click", function (event) {
+        var contentDiv = document.getElementById("content");
+
+        if (contentDiv.style.display = "none") {
+            contentDiv.style.display = "block";
+        }
         document.getElementById("invisGroup").style.display = "block"; 
         document.getElementById("addGroupForm").style.display = "block";
     });
