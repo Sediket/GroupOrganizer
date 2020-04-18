@@ -73,6 +73,8 @@ body {
     padding: 3px;
     background-color: #bbb;
     border-bottom: 1px solid;
+    font-size: large;
+    font-weight: bold
 }
 
 .itemItem {

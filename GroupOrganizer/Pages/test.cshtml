@@ -14,6 +14,7 @@
 
 </head>
 <body>
+    <input type="button" id="sendButton" value="Send to Server" />
     <div id="login">
         <h2>Sign In</h2>
         <div class="username" data-validate="Please enter username">
@@ -74,12 +75,12 @@
     </div>
 
     <div class="invisBackGroup" id="invisGroup"></div>
-        <div class="invisFormGroup" id="addGroupForm">
-            <p>Enter new group:</p><input type="text" id="newGroupName" /><br />
-            <p id="newGroupMessage"></p>
-            <input type="button" id="loadGroupBtn" value="Submit" style="margin-top:5px;" />
-        </div>
-    
+    <div class="invisFormGroup" id="addGroupForm">
+        <p>Enter new group:</p><input type="text" id="newGroupName" /><br />
+        <p id="newGroupMessage"></p>
+        <input type="button" id="loadGroupBtn" value="Submit" style="margin-top:5px;" />
+    </div>
+
 
     <div class="invisBackItem" id="invisItem"></div>
     <div class="invisFormItem" id="addItemForm">
@@ -87,13 +88,14 @@
         <p id="newItemMessage"></p>
         <input type="button" id="loadItemBtn" value="Submit" style="margin-top:5px;" />
     </div>
-    
+
 
 
 </body>
 </html>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/helpers.js">
+<script src="~/js/Connection.js"></script>
+    <script src="~/js/helpers.js">
     //all return groupOrganizer
     //function newGroupOgranizer()
     //function addGroup(groupOrganizer, groupName)
@@ -134,14 +136,14 @@
         }
     });
 
-
+    //add group
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
         //verify the newGroup doesn't already exist:
         if (checkGroupExistsDD("groups", document.getElementById("newGroupName").value)) {
             document.getElementById("newGroupMessage").style.color = "red";
             document.getElementById("newGroupMessage").innerHTML = "Value already exists, enter a new one";
         } else {
-            //value doesn't not exist add:
+            //value doesn't exist add:
             //verify the group box is not empty
             if (!document.getElementById("newGroupName").value == "") {
                 //unhide item area:
@@ -162,12 +164,12 @@
                 GroupOrganizer = addGroup(GroupOrganizer, option.value);
                 var jsonString2 = JSON.stringify(GroupOrganizer);
                 console.log(jsonString2);
-
+                
                 //hide add group text box
                 document.getElementById("invisGroup").style.display = "none";
                 document.getElementById("addGroupForm").style.display = "none";
 
-                connection.invoke("SendMessage", user, newGroup).catch(function (err) {
+                connection.invoke("SendMessage", document.getElementById("username").value, newGroup).catch(function (err) {
                     return console.error(err.toString());
                 });
 
@@ -207,6 +209,12 @@
                 divItemTitle.innerHTML = newItem;
                 divItem.appendChild(divItemTitle);
 
+                //user div for who locks the item
+                var divUserLocked = document.createElement("div"); //new divItem for the current locked user
+                divUserLocked.style.color = "red";
+                divUserLocked.style.textAlign = "center";
+                divItem.prepend(divUserLocked);
+
 
                 // creating the visibility checkbox
                 var visibleLbl = document.createElement("label");
@@ -225,20 +233,40 @@
                 divItem.appendChild(visibleLbl);
                 divItem.appendChild(visibleBtn);
 
+                //add in lock item button
                 var lockBtn = document.createElement("button");
-                lockBtn.textContent = "Lock Item?";
+                lockBtn.textContent = "Lock";
+                lockBtn.style.cssFloat = "right";
+                lockBtn.style.marginTop = "-3px";
+                lockBtn.style.marginRight = "-3px";
 
+                //event listner for locking the item
                 lockBtn.addEventListener("click", function () {
-                    var lockedLbl = document.createElement("label");
-                    lockedLbl.textContent = "This items is being edited by " + username;
+                    var e = document.getElementById("groups")
+                    var currentGroupName = e.options[e.selectedIndex].text;
 
-                    divItem.appendChild(lockedLbl);
+                    if (divUserLocked.innerHTML == "") {
+                        divUserLocked.innerHTML = "locked by " + username;
+                        lockBtn.textContent = "Unlock";
 
-                    GroupOrganizer = lockItem(GroupOrganizer, "sports", "soccer", username);
+                        //var lockedLbl = document.createElement("label");
+                        //lockedLbl.textContent = "This items is being edited by " + username;
+
+                        //divItem.appendChild(lockedLbl);
+                       
+                        GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username);
+                    } else {
+                        //unlock:
+                        lockBtn.textContent = "Lock";
+                        divUserLocked.innerHTML = "";
+
+                        GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username);
+                    }
 
                 });
 
-                divItem.appendChild(lockBtn);
+                //divItem.appendChild(lockBtn);
+                divItemTitle.appendChild(lockBtn);
 
                 // creating the Add Text button for each item
                 var addTextBtn = document.createElement("button");
@@ -253,6 +281,9 @@
 
                     //lock the item so that the user can modify the item:
                     //add the text to the item:
+                    //get the group name:
+                    var e = document.getElementById("groups")
+                    var currentGroupName = e.options[e.selectedIndex].text;
                     GroupOrganizer = addText(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username, itemText.textContent);
                     //print it out:
                     var jsonString2 = JSON.stringify(GroupOrganizer);
@@ -279,8 +310,6 @@
             document.getElementById("newItemMessage").style.color = "red";
             document.getElementById("newItemMessage").innerHTML = "Please enter a value";
         }
-
-        
     });
 
     document.getElementById("invisItem").addEventListener("click", function (event) {
@@ -300,11 +329,7 @@
             document.getElementById("invisItem").style.display = "block";
             document.getElementById("addItemForm").style.display = "block";
         }
-
-
     });
-
-
 
     document.getElementById("invisGroup").addEventListener("click", function (event) {
         document.getElementById("invisGroup").style.display = "none";
