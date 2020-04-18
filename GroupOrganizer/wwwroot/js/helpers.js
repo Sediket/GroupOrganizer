@@ -64,13 +64,15 @@ function checkGroupExistsDD(DD,newText) {
 //check if the item already exists:
 function checkItemExists(newText) {
     var items = document.getElementById("itemArea").children;
-     alert("hi");
+     
     for (var i = 0; i < items.length; i++) {
-        var divTitle = items[i].children[0].innerHTML;
-       
-        alert(divTitle);
-        if (divTitle == newText) {
-            return true;
+        if (typeof (items[i].children[1].children[0]) != "undefined") {
+            var divTitle = items[i].children[1].children[0].innerHTML;
+
+            if (divTitle == newText) {
+                return true;
+            }
+        
         }
     }
     return false;

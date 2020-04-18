@@ -193,7 +193,7 @@
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
         //check that the text field is not empty
         if (!document.getElementById("newItemName").value == "") {
-            alert(checkItemExists(document.getElementById("newItemName").value));
+            
             //check that the item doesn't exist
             if (checkItemExists(document.getElementById("newItemName").value)) {
                 //already exists:
@@ -215,7 +215,7 @@
                 var divItemTitle = document.createElement("div"); //new divTitle for new item
                 divItem.className = "item col-md-4";
                 divItemTitle.className = "itemTitle";
-                divItemTitle.innerHTML = newItem;
+                divItemTitle.innerHTML = "<span>"+newItem+"</span>";
                 divItem.appendChild(divItemTitle);
 
                 //user div for who locks the item
@@ -290,7 +290,7 @@
                 addTextBtn.style.cssFloat = "right";
 
                 // Adding event listener for Add Text button so the user can add text to the item
-                addTextBtn.addEventListener("click", function (event) {
+                addTextBtn.addEventListener("click", function () {
 
                     //add text
                     
@@ -309,7 +309,7 @@
 
                 });
                 //event listener for the submit button for adding text
-                loadTextBtn.addEventListener("click", function (event) {
+                document.getElementById("loadTextBtn").addEventListener("click", function (event) {
                     //hide the form
                     document.getElementById("invisText").style.display = "none";
                     document.getElementById("addTextForm").style.display = "none";
@@ -317,8 +317,10 @@
                     var itemText = document.createElement("div");
                     itemText.textContent = document.getElementById("newTextName").value;
 
+
                     //add to the item UI
                     divItem.appendChild(itemText);
+
 
                     //data structure
                     //lock the item so that the user can modify the item:
