@@ -74,21 +74,27 @@
         <p>Footer</p>
     </div>
 
-    <div class="invisBackGroup" id="invisGroup"></div>
-    <div class="invisFormGroup" id="addGroupForm">
+    <div class="invisBack" id="invisGroup"></div>
+    <div class="invisForm" id="addGroupForm">
         <p>Enter new group:</p><input type="text" id="newGroupName" /><br />
         <p id="newGroupMessage"></p>
         <input type="button" id="loadGroupBtn" value="Submit" style="margin-top:5px;" />
     </div>
 
 
-    <div class="invisBackItem" id="invisItem"></div>
-    <div class="invisFormItem" id="addItemForm">
+    <div class="invisBack" id="invisItem"></div>
+    <div class="invisForm" id="addItemForm">
         <p>Enter new item:</p><input type="text" id="newItemName" /><br />
         <p id="newItemMessage"></p>
         <input type="button" id="loadItemBtn" value="Submit" style="margin-top:5px;" />
     </div>
 
+    <div class="invisBack" id="invisText"></div>
+    <div class="invisForm" id="addTextForm">
+        <p>Enter new Text:</p><input type="text" id="newTextName" /><br />
+        <p id="newTextMessage"></p>
+        <input type="button" id="loadTextBtn" value="Submit" style="margin-top:5px;" />
+    </div>
 
 
 </body>
@@ -187,6 +193,7 @@
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
         //check that the text field is not empty
         if (!document.getElementById("newItemName").value == "") {
+            alert(checkItemExists(document.getElementById("newItemName").value));
             //check that the item doesn't exist
             if (checkItemExists(document.getElementById("newItemName").value)) {
                 //already exists:
@@ -195,6 +202,8 @@
             } else {
                 //doesn't exists:
                 //gather varibles
+                var e = document.getElementById("groups")
+                var currentGroupName = e.options[e.selectedIndex].text; //current selected item in groups dropdown
                 var username = document.getElementById("username").value; //username from text field
                 var newItem = document.getElementById("newItemName").value; //itemname from text field
                 var group = document.getElementById("groups"); //groups drop down
@@ -215,12 +224,18 @@
                 divUserLocked.style.textAlign = "center";
                 divItem.prepend(divUserLocked);
 
-
                 // creating the visibility checkbox
                 var visibleLbl = document.createElement("label");
-                visibleLbl.textContent = "Make visible? ";
+                visibleLbl.textContent = "Visible ";
                 var visibleBtn = document.createElement("input");
                 visibleBtn.type = "checkbox";
+                //get owner of the item:
+                owner = getOwner(GroupOrganizer, currentGroupName, divItemTitle);
+                //don't display checkbox if not the owner:
+                if (!username == owner) {
+                    visibleLbl.style.display = "none";
+                    visibleBtn.style.display = "none";
+                }
 
                 // adding event listener for visibility checkbox so the user can choose whether the item is visible for other or not.
                 visibleBtn.addEventListener("change", function () {
@@ -242,8 +257,7 @@
 
                 //event listner for locking the item
                 lockBtn.addEventListener("click", function () {
-                    var e = document.getElementById("groups")
-                    var currentGroupName = e.options[e.selectedIndex].text;
+
 
                     if (divUserLocked.innerHTML == "") {
                         divUserLocked.innerHTML = "locked by " + username;
@@ -270,15 +284,43 @@
 
                 // creating the Add Text button for each item
                 var addTextBtn = document.createElement("button");
-                var textInput = document.createElement("input");
-                textInput.type = "text";
+                //var textInput = document.createElement("input");
+                //textInput.type = "text";
                 addTextBtn.innerHTML = "Add Text";
+                addTextBtn.style.cssFloat = "right";
+
                 // Adding event listener for Add Text button so the user can add text to the item
                 addTextBtn.addEventListener("click", function (event) {
+
+                    //add text
+                    
+                    document.getElementById("newTextMessage").innerHTML = ""; //empty message text under the textfield
+                    document.getElementById("newTextName").value = ""; //empty add group text field
+
+                    //show add text, text box:
+                    document.getElementById("invisText").style.display = "block";
+                    document.getElementById("addTextForm").style.display = "block";
+                    //event listener for the shadded background
+                    document.getElementById("invisText").addEventListener("click", function (event) {
+                        document.getElementById("invisText").style.display = "none";
+                        document.getElementById("addTextForm").style.display = "none";
+
+                    });
+
+                });
+                //event listener for the submit button for adding text
+                loadTextBtn.addEventListener("click", function (event) {
+                    //hide the form
+                    document.getElementById("invisText").style.display = "none";
+                    document.getElementById("addTextForm").style.display = "none";
+
                     var itemText = document.createElement("div");
-                    itemText.textContent = textInput.value;
+                    itemText.textContent = document.getElementById("newTextName").value;
+
+                    //add to the item UI
                     divItem.appendChild(itemText);
 
+                    //data structure
                     //lock the item so that the user can modify the item:
                     //add the text to the item:
                     //get the group name:
@@ -289,7 +331,8 @@
                     var jsonString2 = JSON.stringify(GroupOrganizer);
                     console.log(jsonString2);
                 });
-                divItem.appendChild(textInput);
+
+                //divItem.appendChild(textInput);
                 divItem.appendChild(addTextBtn);
 
                 //add to the itemArea
@@ -331,11 +374,16 @@
         }
     });
 
+
+
+    //event listener for the shadded background
     document.getElementById("invisGroup").addEventListener("click", function (event) {
         document.getElementById("invisGroup").style.display = "none";
         document.getElementById("addGroupForm").style.display = "none";
     });
 
+
+    //event listner for the add group button
     document.getElementById("addGroupBtn").addEventListener("click", function (event) {
         document.getElementById("newGroupMessage").innerHTML = ""; //empty message text under the textfield
         document.getElementById("newGroupName").value = ""; //empty add group text field
@@ -344,6 +392,9 @@
         document.getElementById("invisGroup").style.display = "block"; 
         document.getElementById("addGroupForm").style.display = "block";
     });
+
+
+
 
 
 
