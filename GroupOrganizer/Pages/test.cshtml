@@ -215,7 +215,7 @@
                 var divItemTitle = document.createElement("div"); //new divTitle for new item
                 divItem.className = "item col-md-4";
                 divItemTitle.className = "itemTitle";
-                divItemTitle.innerHTML = "<span>"+newItem+"</span>";
+                divItemTitle.innerHTML = "<span>" + newItem+"</span>";
                 divItem.appendChild(divItemTitle);
 
                 //user div for who locks the item
@@ -229,24 +229,44 @@
                 visibleLbl.textContent = "Visible ";
                 var visibleBtn = document.createElement("input");
                 visibleBtn.type = "checkbox";
-                //get owner of the item:
-                owner = getOwner(GroupOrganizer, currentGroupName, divItemTitle);
-                //don't display checkbox if not the owner:
-                if (!username == owner) {
-                    visibleLbl.style.display = "none";
-                    visibleBtn.style.display = "none";
-                }
 
-                // adding event listener for visibility checkbox so the user can choose whether the item is visible for other or not.
+
+                ////get owner of the item:
+                //owner = getOwner(GroupOrganizer, currentGroupName, newItem);
+                ////don't display checkbox if not the owner:
+                ////alert(username + " " + owner);
+                
+                //if (username != owner) {
+                //    visibleLbl.style.display = "none";
+                //    visibleBtn.style.display = "none";
+                //}
+
+                // adding event listener for visibility checkbox so the user can choose whether the item is visible for others or not.
                 visibleBtn.addEventListener("change", function () {
                     if (this.checked) {
-                        divItem.style.display = "none";
+                        owner = getOwner(GroupOrganizer, currentGroupName, divItemTitle);
+                        if (owner == user) {
+                            //owner
+                            divItem.style.display = "block";
+                        } else {
+                            //not owner
+                            divItem.style.display = "none";
+                        }
                     } else {
+                        //display for evryone
                         divItem.style.display = "block";
                     }
                 });
                 divItem.appendChild(visibleLbl);
                 divItem.appendChild(visibleBtn);
+
+
+                // creating the Add Text button for each item
+                var addTextBtn = document.createElement("button");
+                addTextBtn.innerHTML = "Add Text";
+                addTextBtn.style.cssFloat = "right";
+                addTextBtn.style.display = "none";
+
 
                 //add in lock item button
                 var lockBtn = document.createElement("button");
@@ -267,14 +287,19 @@
                         //lockedLbl.textContent = "This items is being edited by " + username;
 
                         //divItem.appendChild(lockedLbl);
-                       
-                        GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username);
+
+                        GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, username);
+                        addTextBtn.style.display = "block";
+                        var jsonString2 = JSON.stringify(GroupOrganizer);
+                        console.log(jsonString2);
                     } else {
                         //unlock:
                         lockBtn.textContent = "Lock";
                         divUserLocked.innerHTML = "";
-
-                        GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username);
+                        addTextBtn.style.display = "none";
+                        GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, username);
+                        var jsonString2 = JSON.stringify(GroupOrganizer);
+                        console.log(jsonString2);
                     }
 
                 });
@@ -282,20 +307,15 @@
                 //divItem.appendChild(lockBtn);
                 divItemTitle.appendChild(lockBtn);
 
-                // creating the Add Text button for each item
-                var addTextBtn = document.createElement("button");
-                //var textInput = document.createElement("input");
-                //textInput.type = "text";
-                addTextBtn.innerHTML = "Add Text";
-                addTextBtn.style.cssFloat = "right";
+
 
                 // Adding event listener for Add Text button so the user can add text to the item
-                addTextBtn.addEventListener("click", function () {
-
-                    //add text
+                addTextBtn.addEventListener("click", function (event) {
+                //addTextBtn.onclick = function () {
                     
                     document.getElementById("newTextMessage").innerHTML = ""; //empty message text under the textfield
                     document.getElementById("newTextName").value = ""; //empty add group text field
+                    document.getElementById("newTextName").name = newItem; //for referencing who called it.
 
                     //show add text, text box:
                     document.getElementById("invisText").style.display = "block";
@@ -304,11 +324,10 @@
                     document.getElementById("invisText").addEventListener("click", function (event) {
                         document.getElementById("invisText").style.display = "none";
                         document.getElementById("addTextForm").style.display = "none";
-
                     });
-
                 });
                 //event listener for the submit button for adding text
+                
                 document.getElementById("loadTextBtn").addEventListener("click", function (event) {
                     //hide the form
                     document.getElementById("invisText").style.display = "none";
@@ -317,18 +336,23 @@
                     var itemText = document.createElement("div");
                     itemText.textContent = document.getElementById("newTextName").value;
 
+                    //check its the right calling item
+                    if (newItem == document.getElementById("newTextName").name) {
+                        //add to the item UI
+                        divItem.appendChild(itemText);
 
-                    //add to the item UI
-                    divItem.appendChild(itemText);
-
+                        //add to datastructure:
+                        var e = document.getElementById("groups")
+                        var currentGroupName = e.options[e.selectedIndex].text;
+                        GroupOrganizer = addText(GroupOrganizer, currentGroupName, newItem, username, itemText.textContent);
+                    }
+                    
 
                     //data structure
                     //lock the item so that the user can modify the item:
                     //add the text to the item:
                     //get the group name:
-                    var e = document.getElementById("groups")
-                    var currentGroupName = e.options[e.selectedIndex].text;
-                    GroupOrganizer = addText(GroupOrganizer, currentGroupName, divItemTitle.innerHTML, username, itemText.textContent);
+
                     //print it out:
                     var jsonString2 = JSON.stringify(GroupOrganizer);
                     console.log(jsonString2);
@@ -340,7 +364,7 @@
                 //add to the itemArea
                 document.getElementById("itemArea").appendChild(divItem);
 
-                GroupOrganizer = addItem(GroupOrganizer, currentGroup, divItemTitle.innerHTML, username);
+                GroupOrganizer = addItem(GroupOrganizer, currentGroup, newItem, username);
                 //print it out:
                 var jsonString2 = JSON.stringify(GroupOrganizer);
                 console.log(jsonString2);
@@ -356,6 +380,8 @@
             document.getElementById("newItemMessage").innerHTML = "Please enter a value";
         }
     });
+
+
 
     document.getElementById("invisItem").addEventListener("click", function (event) {
         document.getElementById("invisItem").style.display = "none";
