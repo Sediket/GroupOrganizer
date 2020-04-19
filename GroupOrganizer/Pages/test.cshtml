@@ -54,16 +54,7 @@
 
             <div id="itemArea">
 
-                <div class="item">
-                    <div class="itemTitle">Diablo</div>
-                    <div class="itemItem">rpg</div>
-                    <div class="itemItem">coop</div>
-                </div>
-                <div class="item">
-                    <div class="itemTitle">minecraft</div>
-                    <div class="itemItem">blocky</div>
-                    <div class="itemItem">survival</div>
-                </div>
+                
 
             </div>
 
@@ -142,9 +133,10 @@
         }
     });
 
-    //add group
+
+
+    //add group event listner
     document.getElementById("loadGroupBtn").addEventListener("click", function (event) {
-        //verify the newGroup doesn't already exist:
         if (checkGroupExistsDD("groups", document.getElementById("newGroupName").value)) {
             document.getElementById("newGroupMessage").style.color = "red";
             document.getElementById("newGroupMessage").innerHTML = "Value already exists, enter a new one";
@@ -152,29 +144,15 @@
             //value doesn't exist add:
             //verify the group box is not empty
             if (!document.getElementById("newGroupName").value == "") {
-                //unhide item area:
-                var contentDiv = document.getElementById("content");
-                if (contentDiv.style.display = "none") {
-                    contentDiv.style.display = "block";
-                }
 
-                //var contentItem = document.getElementById("itemArea");
+                //add group to UI function
+                addGroupToUI(document.getElementById("newGroupName").value);
 
-                var newGroup = document.getElementById("newGroupName").value;
-                var option = document.createElement("option");
-                option.textContent = newGroup;
-                document.getElementById("groups").appendChild(option);
-
-                document.getElementById("groups").value = option.value;
-
-                GroupOrganizer = addGroup(GroupOrganizer, option.value);
-                var jsonString2 = JSON.stringify(GroupOrganizer);
-                console.log(jsonString2);
-                
                 //hide add group text box
                 document.getElementById("invisGroup").style.display = "none";
                 document.getElementById("addGroupForm").style.display = "none";
 
+                //send update to server
                 connection.invoke("SendMessage", document.getElementById("username").value, newGroup).catch(function (err) {
                     return console.error(err.toString());
                 });
@@ -186,8 +164,211 @@
                 document.getElementById("newGroupMessage").innerHTML = "Please enter a value";
             }
         }
+
+        
     });
 
+    
+    //function to add group to UI
+    function addGroupToUI(groupName) {
+        //unhide item area:
+        var contentDiv = document.getElementById("content");
+        if (contentDiv.style.display = "none") {
+            contentDiv.style.display = "block";
+        }
+
+        var newGroup = groupName;
+        var option = document.createElement("option");
+        option.textContent = newGroup;
+        //add to dropdown
+        document.getElementById("groups").appendChild(option);
+        document.getElementById("groups").value = option.value;
+
+        //remove old items:
+        var itemArea = document.getElementById("itemArea");
+        var items = document.getElementById("itemArea").children;
+        for (var i = items.length; i > 0; i--) {
+            itemArea.removeChild(items[i-1]);
+        }
+
+        //add to datastructure
+        GroupOrganizer = addGroup(GroupOrganizer, option.value);
+        var jsonString2 = JSON.stringify(GroupOrganizer);
+        //console.log(jsonString2);
+
+    }
+
+    //groupName, itemName, owner, modUser, locked
+    //function to add item to UI
+    function addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked, change) {
+        //new divItem and title
+        console.log("additem begin change:" + change);
+        var divItem = document.createElement("div"); //new divItem
+        var divItemTitle = document.createElement("div"); //new divTitle for new item
+        divItem.className = "item col-md-4";
+        divItemTitle.className = "itemTitle";
+        divItemTitle.innerHTML = "<span>" + newItem + "</span>";
+        divItem.appendChild(divItemTitle);
+
+        //user div for who locks the item
+        var divUserLocked = document.createElement("div"); //new divItem for the current locked user
+        divUserLocked.style.color = "red";
+        divUserLocked.style.textAlign = "center";
+        divItem.prepend(divUserLocked);
+
+        // creating the visibility checkbox
+        var visibleLbl = document.createElement("label");
+        visibleLbl.textContent = "Visible ";
+        var visibleBtn = document.createElement("input");
+        visibleBtn.type = "checkbox";
+
+        // adding event listener for visibility checkbox so the user can choose whether the item is visible for others or not.
+        visibleBtn.addEventListener("change", function () {
+            if (this.checked) {
+                owner = getOwner(GroupOrganizer, currentGroupName, divItemTitle);
+                if (owner == user) {
+                    //owner
+                    divItem.style.display = "block";
+                } else {
+                    //not owner
+                    divItem.style.display = "none";
+                }
+            } else {
+                //display for evryone
+                divItem.style.display = "block";
+            }
+        });
+        divItem.appendChild(visibleLbl);
+        divItem.appendChild(visibleBtn);
+
+        // creating the Add Text button for each item
+        var addTextBtn = document.createElement("button");
+        addTextBtn.innerHTML = "Add Text";
+        addTextBtn.style.cssFloat = "right";
+        addTextBtn.style.display = "none";
+
+        //add in lock item button
+        var lockBtn = document.createElement("button");
+        lockBtn.textContent = "Lock";
+        lockBtn.style.cssFloat = "right";
+        lockBtn.style.marginTop = "-3px";
+        lockBtn.style.marginRight = "-3px";
+
+        //check if already locked:
+        if (locked == "yes") {
+            //locked
+            divUserLocked.innerHTML = "locked by " + modifyingUser;
+            lockBtn.textContent = "Unlock";
+        } else {
+            //unlocked
+            lockBtn.textContent = "Lock";
+            divUserLocked.innerHTML = "";
+            addTextBtn.style.display = "none";
+        }
+
+        //event listner for locking the item
+        lockBtn.addEventListener("click", function () {
+
+            if (divUserLocked.innerHTML == "") {
+                //not locked, lock now
+                divUserLocked.innerHTML = "locked by " + modifyingUser;
+                lockBtn.textContent = "Unlock";
+
+                if (change == 0) {
+                    //update data structure
+                    GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, modifyingUser);
+                }
+                
+                addTextBtn.style.display = "block";
+                //var jsonString2 = JSON.stringify(GroupOrganizer);
+                //console.log(jsonString2);
+            } else {
+                //unlock:
+                lockBtn.textContent = "Lock";
+                divUserLocked.innerHTML = "";
+                addTextBtn.style.display = "none";
+
+                if (change == 0) {
+                    //update data structure
+                    GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, modifyingUser);
+                }
+                //var jsonString2 = JSON.stringify(GroupOrganizer);
+                //console.log(jsonString2);
+            }
+
+        });
+
+
+        divItemTitle.appendChild(lockBtn);
+
+
+
+
+        // Adding event listener for Add Text button so the user can add text to the item
+        addTextBtn.addEventListener("click", function (event) {
+            //addTextBtn.onclick = function () {
+
+            document.getElementById("newTextMessage").innerHTML = ""; //empty message text under the textfield
+            document.getElementById("newTextName").value = ""; //empty add group text field
+            document.getElementById("newTextName").name = newItem; //for referencing who called it.
+
+            //show add text, text box:
+            document.getElementById("invisText").style.display = "block";
+            document.getElementById("addTextForm").style.display = "block";
+            //event listener for the shadded background
+            document.getElementById("invisText").addEventListener("click", function (event) {
+                document.getElementById("invisText").style.display = "none";
+                document.getElementById("addTextForm").style.display = "none";
+            });
+        });
+        //event listener for the submit button for adding text
+
+
+
+        document.getElementById("loadTextBtn").addEventListener("click", function (event) {
+            //hide the form
+            document.getElementById("invisText").style.display = "none";
+            document.getElementById("addTextForm").style.display = "none";
+
+            var itemText = document.createElement("div");
+            itemText.textContent = document.getElementById("newTextName").value;
+
+            //check its the right calling item
+            if (newItem == document.getElementById("newTextName").name) {
+                //add to the item UI
+                divItem.appendChild(itemText);
+
+                //add to datastructure:
+                var e = document.getElementById("groups")
+                var currentGroupName = e.options[e.selectedIndex].text;
+                console.log("change" + change);
+                if (change == 0) {
+                    GroupOrganizer = addText(GroupOrganizer, currentGroupName, newItem, itemText.textContent);
+                }
+                
+            }
+
+
+            //print it out:
+            //var jsonString2 = JSON.stringify(GroupOrganizer);
+            //console.log(jsonString2);
+        });
+
+        //divItem.appendChild(textInput);
+        divItem.appendChild(addTextBtn);
+
+        //add to the itemArea
+        document.getElementById("itemArea").appendChild(divItem);
+
+        console.log("change add item:" + change);
+        if (change == 0) {
+            GroupOrganizer = addItem(GroupOrganizer, currentGroupName, newItem, owner);
+        }
+        //print it out:
+        //var jsonString2 = JSON.stringify(GroupOrganizer);
+        //console.log(jsonString2);
+
+    }
 
     //event listener for submit button for loadItem
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
@@ -204,171 +385,18 @@
                 //gather varibles
                 var e = document.getElementById("groups")
                 var currentGroupName = e.options[e.selectedIndex].text; //current selected item in groups dropdown
-                var username = document.getElementById("username").value; //username from text field
+                var owner = document.getElementById("username").value; //username from text field
                 var newItem = document.getElementById("newItemName").value; //itemname from text field
-                var group = document.getElementById("groups"); //groups drop down
-                var currentGroup = group.options[group.selectedIndex].text //selected item in group drop down
 
+                //add to UI
+                modifyingUser = document.getElementById("username").value;
+                locked = "no";
+                change = 0; //add to ui
+                console.log("change" + change);
+                addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked,change);
 
-                //new divItem and title
-                var divItem = document.createElement("div"); //new divItem
-                var divItemTitle = document.createElement("div"); //new divTitle for new item
-                divItem.className = "item col-md-4";
-                divItemTitle.className = "itemTitle";
-                divItemTitle.innerHTML = "<span>" + newItem+"</span>";
-                divItem.appendChild(divItemTitle);
-
-                //user div for who locks the item
-                var divUserLocked = document.createElement("div"); //new divItem for the current locked user
-                divUserLocked.style.color = "red";
-                divUserLocked.style.textAlign = "center";
-                divItem.prepend(divUserLocked);
-
-                // creating the visibility checkbox
-                var visibleLbl = document.createElement("label");
-                visibleLbl.textContent = "Visible ";
-                var visibleBtn = document.createElement("input");
-                visibleBtn.type = "checkbox";
-
-
-                ////get owner of the item:
-                //owner = getOwner(GroupOrganizer, currentGroupName, newItem);
-                ////don't display checkbox if not the owner:
-                ////alert(username + " " + owner);
-                
-                //if (username != owner) {
-                //    visibleLbl.style.display = "none";
-                //    visibleBtn.style.display = "none";
-                //}
-
-                // adding event listener for visibility checkbox so the user can choose whether the item is visible for others or not.
-                visibleBtn.addEventListener("change", function () {
-                    if (this.checked) {
-                        owner = getOwner(GroupOrganizer, currentGroupName, divItemTitle);
-                        if (owner == user) {
-                            //owner
-                            divItem.style.display = "block";
-                        } else {
-                            //not owner
-                            divItem.style.display = "none";
-                        }
-                    } else {
-                        //display for evryone
-                        divItem.style.display = "block";
-                    }
-                });
-                divItem.appendChild(visibleLbl);
-                divItem.appendChild(visibleBtn);
-
-
-                // creating the Add Text button for each item
-                var addTextBtn = document.createElement("button");
-                addTextBtn.innerHTML = "Add Text";
-                addTextBtn.style.cssFloat = "right";
-                addTextBtn.style.display = "none";
-
-
-                //add in lock item button
-                var lockBtn = document.createElement("button");
-                lockBtn.textContent = "Lock";
-                lockBtn.style.cssFloat = "right";
-                lockBtn.style.marginTop = "-3px";
-                lockBtn.style.marginRight = "-3px";
-
-                //event listner for locking the item
-                lockBtn.addEventListener("click", function () {
-
-
-                    if (divUserLocked.innerHTML == "") {
-                        divUserLocked.innerHTML = "locked by " + username;
-                        lockBtn.textContent = "Unlock";
-
-                        //var lockedLbl = document.createElement("label");
-                        //lockedLbl.textContent = "This items is being edited by " + username;
-
-                        //divItem.appendChild(lockedLbl);
-
-                        GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, username);
-                        addTextBtn.style.display = "block";
-                        var jsonString2 = JSON.stringify(GroupOrganizer);
-                        console.log(jsonString2);
-                    } else {
-                        //unlock:
-                        lockBtn.textContent = "Lock";
-                        divUserLocked.innerHTML = "";
-                        addTextBtn.style.display = "none";
-                        GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, username);
-                        var jsonString2 = JSON.stringify(GroupOrganizer);
-                        console.log(jsonString2);
-                    }
-
-                });
-
-                //divItem.appendChild(lockBtn);
-                divItemTitle.appendChild(lockBtn);
-
-
-
-                // Adding event listener for Add Text button so the user can add text to the item
-                addTextBtn.addEventListener("click", function (event) {
-                //addTextBtn.onclick = function () {
-                    
-                    document.getElementById("newTextMessage").innerHTML = ""; //empty message text under the textfield
-                    document.getElementById("newTextName").value = ""; //empty add group text field
-                    document.getElementById("newTextName").name = newItem; //for referencing who called it.
-
-                    //show add text, text box:
-                    document.getElementById("invisText").style.display = "block";
-                    document.getElementById("addTextForm").style.display = "block";
-                    //event listener for the shadded background
-                    document.getElementById("invisText").addEventListener("click", function (event) {
-                        document.getElementById("invisText").style.display = "none";
-                        document.getElementById("addTextForm").style.display = "none";
-                    });
-                });
-                //event listener for the submit button for adding text
-                
-                document.getElementById("loadTextBtn").addEventListener("click", function (event) {
-                    //hide the form
-                    document.getElementById("invisText").style.display = "none";
-                    document.getElementById("addTextForm").style.display = "none";
-
-                    var itemText = document.createElement("div");
-                    itemText.textContent = document.getElementById("newTextName").value;
-
-                    //check its the right calling item
-                    if (newItem == document.getElementById("newTextName").name) {
-                        //add to the item UI
-                        divItem.appendChild(itemText);
-
-                        //add to datastructure:
-                        var e = document.getElementById("groups")
-                        var currentGroupName = e.options[e.selectedIndex].text;
-                        GroupOrganizer = addText(GroupOrganizer, currentGroupName, newItem, username, itemText.textContent);
-                    }
-                    
-
-                    //data structure
-                    //lock the item so that the user can modify the item:
-                    //add the text to the item:
-                    //get the group name:
-
-                    //print it out:
-                    var jsonString2 = JSON.stringify(GroupOrganizer);
-                    console.log(jsonString2);
-                });
-
-                //divItem.appendChild(textInput);
-                divItem.appendChild(addTextBtn);
-
-                //add to the itemArea
-                document.getElementById("itemArea").appendChild(divItem);
-
-                GroupOrganizer = addItem(GroupOrganizer, currentGroup, newItem, username);
-                //print it out:
-                var jsonString2 = JSON.stringify(GroupOrganizer);
-                console.log(jsonString2);
-
+                            
+                //hide the additem form and background
                 document.getElementById("invisItem").style.display = "none";
                 document.getElementById("addItemForm").style.display = "none";
             } //end of if check exists
@@ -380,6 +408,39 @@
             document.getElementById("newItemMessage").innerHTML = "Please enter a value";
         }
     });
+
+
+    //add text to UI
+    function addTextToUI(groupName, itemName, texts, change) {
+        var e = document.getElementById("groups")
+        var currentGroupName = e.options[e.selectedIndex].text;
+        //make sure right group
+        if (currentGroupName == groupName) {
+            //find the item:
+            var items = document.getElementById("itemArea").children;
+            for (var i = 0; i < items.length; i++) {
+                if (typeof (items[i].children[1].children[0]) != "undefined") {
+                    var divTitle = items[i].children[1].children[0].innerHTML;
+                    if (divTitle == itemName) {
+                        //add the texts
+                        textsLen = texts.length
+                        for (k = 0; k < textsLen; k++) {
+                            var itemText = document.createElement("div");
+                            itemText.textContent = texts[k];
+                            items[i].appendChild(itemText);
+                            //add to datastructure:
+                            //console.log("here " + GroupOrganizer, currentGroupName, itemName, texts[k]);
+                            if (change == 0) {
+                                GroupOrganizer = addText(GroupOrganizer, currentGroupName, itemName, texts[k]);
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 
 
@@ -425,6 +486,108 @@
 
 
 
+    //function rebuild on group change
+    function rebuildGroupChange(groupName) {
+
+    }
+
+    //change group event listner
+    document.getElementById("groups").addEventListener("change", function () {
+        //get new selected group:
+        var e = document.getElementById("groups")
+        var currentGroupName = e.options[e.selectedIndex].text;
+
+        console.log(currentGroupName + " is selected");
+
+        //change selected group
+        
+        console.log(GroupOrganizer.length);
+        GroupOrganizer = selectGroup(GroupOrganizer, currentGroupName)
+
+        jsonString = JSON.stringify(GroupOrganizer);
+        console.log(jsonString);
+
+        //clear items
+        var itemArea = document.getElementById("itemArea");
+        var items = document.getElementById("itemArea").children;
+        for (var i = items.length; i > 0; i--) {
+            itemArea.removeChild(items[i - 1]);
+        }
+
+        jsonObject = JSON.parse(jsonString);
+
+        console.log(GroupOrganizer);
+
+        //populate the selected group:
+        for (var i = 0; i < GroupOrganizer.length; i++) {
+            
+            groupName = GroupOrganizer[i].groupName;
+            if (GroupOrganizer[i].selected == true) {
+                Itemlength = GroupOrganizer[i].items.length;
+                
+                for (var j = 0; j < Itemlength; j++) {
+                    console.log(groupName, itemName, owner, modUser, locked);
+
+                    itemName = (GroupOrganizer[i].items[j].itemName);
+
+                    vis = (GroupOrganizer[i].items[j].visible);
+                    modUser = (GroupOrganizer[i].items[j].modifyingUserName);
+                    owner = (GroupOrganizer[i].items[j].ownerName);
+                    locked = (GroupOrganizer[i].items[j].locked);
+                    texts = (GroupOrganizer[i].items[j].texts);
+
+                    
+                    change = 1;
+                    //add items:
+                    addItemToUI(groupName, itemName, owner, modUser, locked, change);
+                    //add texts
+                    
+                    addTextToUI(groupName, itemName, texts, change);
+                                
+                }
+            }
+        }
+        
+    });
+
+    sampleJSON = '[{ "groupName": "Sports", "selected": "true", "items": [{ "itemName": "Soccer", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "yes", "texts": ["ball game", "big field"] }, { "itemName": "Baseball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "no", "texts": ["hit ball with stick", "catch ball with hands"] }, { "itemName": "basketball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "no", "texts": ["ball game with hands", "shoot ball in basket", "have fun"] }] }]';
+    jsonObject = JSON.parse(sampleJSON);
+
+    rebuild(jsonObject);
+
+    //rebuild
+    function rebuild(jsonObject) {
+        console.log(jsonObject);
+        for (var i = 0; i < jsonObject.length; i++) {
+            //add to groups ui
+            
+            groupName = jsonObject[i].groupName;
+            addGroupToUI(groupName);
+        }
+        //populate the selected group:
+        for (var i = 0; i < jsonObject.length; i++) {
+            console.log(jsonObject[i].selected);
+            groupName = jsonObject[i].groupName;
+            
+            if (jsonObject[i].selected == "true") {
+                
+                for (var j = 0; j < jsonObject[i].items.length; j++) {
+                    itemName = (jsonObject[i].items[j].itemName);
+                    vis = (jsonObject[i].items[j].visible);
+                    modUser = (jsonObject[i].items[j].modifyingUserName);
+                    owner = (jsonObject[i].items[j].ownerName);
+                    locked = (jsonObject[i].items[j].locked);
+                    texts = (jsonObject[i].items[j].texts);
+
+                    change = 0;
+                    //add items:
+                    addItemToUI(groupName, itemName, owner, modUser, locked,change);
+                    //add texts
+                    addTextToUI(groupName, itemName, texts,change);
+                }
+            }
+        }
+    }
 
     //var groupOrganizer = [{
     //    groupName: "games",

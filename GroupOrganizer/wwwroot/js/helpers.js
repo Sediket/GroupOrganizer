@@ -41,6 +41,7 @@ function addGroup(groupOrganizer, groupName) {
 
     newGroup = {
         groupName: groupName,
+        selected: true,
         items: [],
     } 
     groupOrganizer.push(newGroup);
@@ -48,6 +49,19 @@ function addGroup(groupOrganizer, groupName) {
     return groupOrganizer;
 }
 
+//select group
+function selectGroup(groupOrganizer, groupName) {
+    for (var i = 0; i < groupOrganizer.length; i++) {
+        if (groupOrganizer[i].groupName == groupName) {
+            //found
+            groupOrganizer[i].selected = true;
+        } else {
+            groupOrganizer[i].selected = false;
+        }
+    }
+    return groupOrganizer;
+    //was not found
+}
 
 //check if group exists in dropdown - pass in dropdown id
 function checkGroupExistsDD(DD,newText) {
@@ -115,7 +129,7 @@ function addItem(groupOrganizer, groupName, itemName, ownerName) {
     return groupOrganizer;
 }
 
-function addText(groupOrganizer, groupName, itemName, userName, newText) {
+function addText(groupOrganizer, groupName, itemName, newText) {
     //must be locked first
     //find the item
     //verify if not visible that only the owner can modify
@@ -126,24 +140,24 @@ function addText(groupOrganizer, groupName, itemName, userName, newText) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
 
-                if (groupOrganizer[i].items[j].itemName == itemName &&
-                    groupOrganizer[i].items[j].locked == "yes" &&
-                    groupOrganizer[i].items[j].modifyingUserName == userName) {
+                if (groupOrganizer[i].items[j].itemName == itemName) {
 
-                    if (groupOrganizer[i].items[j].visible == "no" &&
-                        groupOrganizer[i].items[j].ownerName == userName) {
-                        //modifyingUser = user
-                        //owner = user
-                        //visiblity = no
-                        //locked = yes
-                        groupOrganizer[i].items[j].texts.push(newText)
+                    groupOrganizer[i].items[j].texts.push(newText);
 
-                    } else if (groupOrganizer[i].items[j].visible == "yes") {
-                        //modifyingUser = user
-                        //visibility = yes
-                        //locked = yes
-                        groupOrganizer[i].items[j].texts.push(newText)
-                    }
+                    //if (groupOrganizer[i].items[j].visible == "no" &&
+                    //    groupOrganizer[i].items[j].ownerName == userName) {
+                    //    //modifyingUser = user
+                    //    //owner = user
+                    //    //visiblity = no
+                    //    //locked = yes
+                    //    groupOrganizer[i].items[j].texts.push(newText)
+
+                    //} else if (groupOrganizer[i].items[j].visible == "yes") {
+                    //    //modifyingUser = user
+                    //    //visibility = yes
+                    //    //locked = yes
+                    //    groupOrganizer[i].items[j].texts.push(newText)
+                    //}
                 }
             }
         }
@@ -171,12 +185,12 @@ function lockItem(groupOrganizer, groupName, itemName,userName) {
 }
 
 //unlocks item if the username matches the modifying username
-function unlockItem(groupOrganizer, groupName, itemName,userName) {
+function unlockItem(groupOrganizer, groupName, itemName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
                 if (groupOrganizer[i].items[j].itemName == itemName &&
-                    groupOrganizer[i].items[j].modifyingUserName == userName) {
+                    groupOrganizer[i].items[j].modifyingUserName == "") {
                     groupOrganizer[i].items[j].locked = "no";
                 }
             }
