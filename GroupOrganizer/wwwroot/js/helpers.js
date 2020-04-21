@@ -189,8 +189,21 @@ function lockItem(groupName, itemName, userName) {
             }
         }
     }
-    //return groupOrganizer;
 }
+
+//remove item
+function removeItem(groupName, itemName) {
+    for (var i = 0; i < groupOrganizer.length; i++) {
+        if (groupOrganizer[i].groupName == groupName) {
+            for (var j = 0; j < groupOrganizer[i].items.length; j++) {
+                if (groupOrganizer[i].items[j].itemName == itemName) {
+                    groupOrganizer[i].items.splice(j, 1);
+                }
+            }
+        }
+    }
+}
+
 
 //unlocks item if the username matches the modifying username
 function unlockItem(groupName, itemName) {
