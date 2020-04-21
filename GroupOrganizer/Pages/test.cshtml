@@ -148,6 +148,7 @@
 
         //rebuild everything
         jsonObject = JSON.parse(jsonString);
+        
         rebuild(jsonObject);
     });
 
@@ -642,11 +643,29 @@
 
                     change = 0;
                     //add items:
-                    
-                    addItemToUI(groupName, itemName, owner, modUser, locked,change);
+
+                    addItemToUI(groupName, itemName, owner, modUser, locked, change);
                     //add texts
-                    addTextToUI(groupName, itemName, texts,change);
+                    addTextToUI(groupName, itemName, texts, change);
                 }
+            } else {
+                //add to datastructure
+                for (var j = 0; j < jsonObject[i].items.length; j++) {
+                    itemName = (jsonObject[i].items[j].itemName);
+                    vis = (jsonObject[i].items[j].visible);
+                    modUser = (jsonObject[i].items[j].modifyingUserName);
+                    owner = (jsonObject[i].items[j].ownerName);
+                    locked = (jsonObject[i].items[j].locked);
+                    texts = (jsonObject[i].items[j].texts);
+
+
+                    GroupOrganizer = addItem(GroupOrganizer, groupName, itemName, owner);
+
+                    GroupOrganizer = addText(GroupOrganizer, groupName, itemName, texts);
+
+                }
+
+
             }
         }
     }
