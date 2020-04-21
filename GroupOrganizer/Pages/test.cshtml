@@ -315,15 +315,14 @@
         lockBtn.style.marginTop = "-3px";
         lockBtn.style.marginRight = "-3px";
 
-        
 
         //check if already locked:
         if (locked == "yes") {
             console.log("locked: " + locked);
             //locked
-            divUserLocked.innerHTML = "locked by " + modifyingUser;
+            divUserLocked.innerHTML = "locked by " +  modifyingUser;
             lockBtn.textContent = "Unlock";
-            GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, modifyingUser);
+            GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
             console.log(GroupOrganizer);
 
         } else {
@@ -331,20 +330,24 @@
             lockBtn.textContent = "Lock";
             divUserLocked.innerHTML = "";
             addTextBtn.style.display = "none";
-            GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, modifyingUser);
+            GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
         }
 
         //event listner for locking the item
         lockBtn.addEventListener("click", function () {
 
+            
+
+            //call lockUI
+
             if (divUserLocked.innerHTML == "") {
                 //not locked, lock now
-                divUserLocked.innerHTML = "locked by " + modifyingUser;
+                divUserLocked.innerHTML = "locked by " + document.getElementById("username").value;
                 lockBtn.textContent = "Unlock";
 
                 if (change == 0) {
                     //update data structure
-                    GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, modifyingUser);
+                    GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
                 }
                 
                 addTextBtn.style.display = "block";
@@ -358,7 +361,7 @@
 
                 if (change == 0) {
                     //update data structure
-                    GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, modifyingUser);
+                    GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
                 }
                 //var jsonString2 = JSON.stringify(GroupOrganizer);
                 
