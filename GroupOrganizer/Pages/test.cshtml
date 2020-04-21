@@ -630,10 +630,8 @@
             
             groupName = jsonObject[i].groupName;
 
-
-            
             if (jsonObject[i].selected == true) {
-                
+                makeGroupSelectedUI(jsonObject[i].groupName);
                 for (var j = 0; j < jsonObject[i].items.length; j++) {
                     itemName = (jsonObject[i].items[j].itemName);
                     vis = (jsonObject[i].items[j].visible);
@@ -653,6 +651,16 @@
         }
     }
 
+    function makeGroupSelectedUI(groupToBeSelected) {
+        //make the selected group the one shown in the dropdown
+        select = document.getElementById("groups");
+        length = select.options.length;
+        for (i = length - 1; i >= 0; i--) {
+            if (groupToBeSelected == select.options[i].textContent) {
+                select.options[i].selected = true;
+            }
+        }
+    }
 
 
     //var groupOrganizer = [{

@@ -144,6 +144,7 @@ function addText(groupOrganizer, groupName, itemName, newText) {
 
                     groupOrganizer[i].items[j].texts.push(newText);
 
+
                     //if (groupOrganizer[i].items[j].visible == "no" &&
                     //    groupOrganizer[i].items[j].ownerName == userName) {
                     //    //modifyingUser = user
