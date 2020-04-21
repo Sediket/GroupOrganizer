@@ -15,6 +15,7 @@
 </head>
 <body>
     <input type="button" id="sendButton" value="Send to Server" />
+    <label id="lblUserName"></label>
     <div id="login">
         <h2>Sign In</h2>
         <div class="username" data-validate="Please enter username">
@@ -170,6 +171,7 @@
             alert("Please enter username.");
             event.preventDefault();
         } else {
+            document.getElementById("lblUserName").innerHTML = "Welcome " + username;
             loginDiv.style.display = "none";
             mainDiv.style.display = "block";
         }
