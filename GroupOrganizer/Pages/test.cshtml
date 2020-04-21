@@ -556,8 +556,6 @@
         var e = document.getElementById("groups")
         var currentGroupName = e.options[e.selectedIndex].text;
 
-        
-
         //change selected group
         
         
@@ -610,7 +608,7 @@
     });
 
     sampleJSON = '[{ "groupName": "Sports", "selected": true, "items": [{ "itemName": "Soccer", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "yes", "texts": ["ball game", "big field"] }, { "itemName": "Baseball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "no", "texts": ["hit ball with stick", "catch ball with hands"] }, { "itemName": "basketball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "no", "texts": ["ball game with hands", "shoot ball in basket", "have fun"] }] },{"groupName":"asdf","selected":false,"items":[]}]';
-    temp =       '[{ "groupName": "Sports", "selected": true, "items": [{ "itemName": "Soccer", "ownerName":"Sediket","modifyingUserName":"","visible":"no","locked":"no","texts":["ball game","big field"]},{"itemName":"Baseball","ownerName":"Sediket","modifyingUserName":"","visible":"no","locked":"no","texts":["hit ball with stick","catch ball with hands"]},{"itemName":"basketball","ownerName":"Sediket","modifyingUserName":"","visible":"no","locked":"no","texts":["ball game with hands","shoot ball in basket","have fun"]},{"itemName":"asdf","ownerName":"Bradley","modifyingUserName":"","visible":"no","locked":"no","texts":[]}]},{"groupName":"asdf","selected":false,"items":[]}]'
+    
     jsonObject = JSON.parse(sampleJSON);
 
     
@@ -634,7 +632,6 @@
                 //add items to ui and datastructure
                 makeGroupSelectedUI(groupName);
                 
-
                 for (var j = 0; j < jsonObject[i].items.length; j++) {
                     itemName = (jsonObject[i].items[j].itemName);
                     vis = (jsonObject[i].items[j].visible);
@@ -675,10 +672,7 @@
                     for (k = 0; k < textsLen; k++) {
                         addText(groupName, itemName, texts[k]);
                     }
-
                 }
-
-
             }
         }
         console.log(JSON.stringify(groupOrganizer));
@@ -694,57 +688,6 @@
             }
         }
     }
-
-
-    //var groupOrganizer = [{
-    //    groupName: "games",
-    //    items: [{
-    //        itemName: "diablo",
-    //        texts: ["rpg","fun with friends","coop"]
-    //    }, {
-    //        itemName: "Minecraft",
-    //        userName: "Brad",
-    //        texts: ["coop","survival"],
-    //        }]
-    //}, {
-    //    groupName: "movies",
-    //    items: [{
-    //        itemName: "star wars",
-    //        texts: ["sci-fy","action"],
-    //    }]
-    //}]
-
-    //newGroup = {
-    //    groupName: "sports",
-    //    items: []
-    //}
-
-    //newItem = {
-    //    itemName: "soccer",
-    //    texts:["popular in europe","150 yard field"]
-    //}
-
-
-    //newGroup.items.push(newItem);
-
-    //groupOrganizer.push(newGroup);
-
-    
-
-
-    //document.writeln(groupOrganizer[0].groupName);
-    //document.writeln(groupOrganizer[0].items[0].itemName);
-    //document.writeln(groupOrganizer[0].items[0].texts[2]);
-
-    //var jsonString = JSON.stringify(groupOrganizer);
-
-
-    //var unJSON = JSON.parse(jsonString)
-
-
-    //document.writeln(jsonString);
-    //document.writeln();
-    //document.writeln(unJSON.length);
 
 </script>
 
