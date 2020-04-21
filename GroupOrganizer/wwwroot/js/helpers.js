@@ -1,6 +1,6 @@
 ﻿//Examples:
 
-GroupOrganizer = newGroupOgranizer();
+groupOrganizer = newGroupOgranizer();
 
 //GroupOrganizer = addGroup(GroupOrganizer, "sports");
 //GroupOrganizer = addGroup(GroupOrganizer, "games");
@@ -37,7 +37,7 @@ function newGroupOgranizer() {
 }
 
 //add new group
-function addGroup(groupOrganizer, groupName) {
+function addGroup(groupName) {
 
     newGroup = {
         groupName: groupName,
@@ -46,11 +46,10 @@ function addGroup(groupOrganizer, groupName) {
     } 
     groupOrganizer.push(newGroup);
 
-    return groupOrganizer;
 }
 
 //select group
-function selectGroup(groupOrganizer, groupName) {
+function selectGroup(groupName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             //found
@@ -59,7 +58,17 @@ function selectGroup(groupOrganizer, groupName) {
             groupOrganizer[i].selected = false;
         }
     }
-    return groupOrganizer;
+    //was not found
+}
+
+//deselect group
+function deSelectGroup(groupName) {
+    for (var i = 0; i < groupOrganizer.length; i++) {
+        if (groupOrganizer[i].groupName == groupName) {
+            //found
+            groupOrganizer[i].selected = false;
+        } 
+    }
     //was not found
 }
 
@@ -94,7 +103,7 @@ function checkItemExists(newText) {
 
 
 //check if group exists in data struture:
-function checkGroupExistsDS(groupOrganizer, groupName) {
+function checkGroupExistsDS(groupName) {
 
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
@@ -108,7 +117,7 @@ function checkGroupExistsDS(groupOrganizer, groupName) {
 
 
 
-function addItem(groupOrganizer, groupName, itemName, ownerName) {
+function addItem(groupName, itemName, ownerName) {
     
     newItem = {
         itemName: itemName,
@@ -126,10 +135,10 @@ function addItem(groupOrganizer, groupName, itemName, ownerName) {
             groupOrganizer[i].items.push(newItem);
         }
     }
-    return groupOrganizer;
+    
 }
 
-function addText(groupOrganizer, groupName, itemName, newText) {
+function addText(groupName, itemName, newText) {
     //must be locked first
     //find the item
     //verify if not visible that only the owner can modify
@@ -163,18 +172,16 @@ function addText(groupOrganizer, groupName, itemName, newText) {
             }
         }
     }
-    return groupOrganizer;
+    
 }
 
 
 //locks the item if its not locked and adds the modifying username
-function lockItem(groupOrganizer, groupName, itemName,userName) {
+function lockItem(groupName, itemName, userName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
-                if (groupOrganizer[i].items[j].itemName == itemName &&
-                    groupOrganizer[i].items[j].locked == "no") {
-
+                if (groupOrganizer[i].items[j].itemName == itemName) {
                     groupOrganizer[i].items[j].locked = "yes";
                     groupOrganizer[i].items[j].modifyingUserName = userName;
                     
@@ -182,26 +189,25 @@ function lockItem(groupOrganizer, groupName, itemName,userName) {
             }
         }
     }
-    return groupOrganizer;
+    //return groupOrganizer;
 }
 
 //unlocks item if the username matches the modifying username
-function unlockItem(groupOrganizer, groupName, itemName) {
+function unlockItem(groupName, itemName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
-                if (groupOrganizer[i].items[j].itemName == itemName &&
-                    groupOrganizer[i].items[j].modifyingUserName == "") {
+                if (groupOrganizer[i].items[j].itemName == itemName) {
                     groupOrganizer[i].items[j].locked = "no";
                 }
             }
         }
     }
-    return groupOrganizer;
+    
 }
 
 //make item visible
-function makeVisible(groupOrganizer, groupName, itemName, userName) {
+function makeVisible(groupName, itemName, userName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
@@ -213,11 +219,11 @@ function makeVisible(groupOrganizer, groupName, itemName, userName) {
             }
         }
     }
-    return groupOrganizer;
+    
 }
 
 //make item invisible
-function makeinVisible(groupOrganizer, groupName, itemName, userName) {
+function makeinVisible(groupName, itemName, userName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
@@ -228,12 +234,12 @@ function makeinVisible(groupOrganizer, groupName, itemName, userName) {
             }
         }
     }
-    return groupOrganizer;
+    
 }
 
 //return the owner of an item
 //owner = getOwner(GroupOrganizer, "sports", "soccer");
-function getOwner(groupOrganizer, groupName, itemName) {
+function getOwner(groupName, itemName) {
     var tempOwner;
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
@@ -245,4 +251,19 @@ function getOwner(groupOrganizer, groupName, itemName) {
         }
     }
     return tempOwner;
+}
+
+
+function getModUser(groupName, itemName) {
+    var modUser;
+    for (var i = 0; i < groupOrganizer.length; i++) {
+        if (groupOrganizer[i].groupName == groupName) {
+            for (var j = 0; j < groupOrganizer[i].items.length; j++) {
+                if (groupOrganizer[i].items[j].itemName == itemName) {
+                    modUser = groupOrganizer[i].items[j].modifyingUserName;
+                }
+            }
+        }
+    }
+    return modUser;
 }

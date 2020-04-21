@@ -128,14 +128,17 @@
     });
 
     function serverUpdate() {
-        jsonString = JSON.stringify(GroupOrganizer);
-        console.log("sending: " + jsonString);
+        
+        jsonString = JSON.stringify(groupOrganizer);
+
         connection.invoke("SendMessage", document.getElementById("username").value, jsonString).catch(function (err) {
             return console.error(err.toString());
         });
     }
 
     connection.on("ReceiveMessage", function (user, jsonString) {
+        
+
         //remove everything
 
         //remove dropdown items
@@ -151,6 +154,7 @@
         jsonObject = JSON.parse(jsonString);
         
         rebuild(jsonObject);
+        
     });
 
 
@@ -174,6 +178,7 @@
             document.getElementById("lblUserName").innerHTML = "Welcome " + username;
             loginDiv.style.display = "none";
             mainDiv.style.display = "block";
+            rebuild(jsonObject);
         }
     });
 
@@ -231,7 +236,7 @@
 
     //empty the data structure:
     function emptyDataStructure() {
-        GroupOrganizer = [];
+        groupOrganizer = [];
     }
 
     //function to add group to UI
@@ -254,8 +259,8 @@
 
 
         //add to datastructure
-        GroupOrganizer = addGroup(GroupOrganizer, option.value);
-        var jsonString2 = JSON.stringify(GroupOrganizer);
+        addGroup(option.value);
+        var jsonString2 = JSON.stringify(groupOrganizer);
         
     }
 
@@ -286,7 +291,7 @@
         // adding event listener for visibility checkbox so the user can choose whether the item is visible for others or not.
         visibleBtn.addEventListener("change", function () {
             if (this.checked) {
-                owner = getOwner(GroupOrganizer, currentGroupName, divItemTitle);
+                owner = getOwner(currentGroupName, divItemTitle);
                 if (owner == user) {
                     //owner
                     divItem.style.display = "block";
@@ -315,64 +320,7 @@
         lockBtn.style.marginTop = "-3px";
         lockBtn.style.marginRight = "-3px";
 
-
-        //check if already locked:
-        if (locked == "yes") {
-            console.log("locked: " + locked);
-            //locked
-            divUserLocked.innerHTML = "locked by " +  modifyingUser;
-            lockBtn.textContent = "Unlock";
-            GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
-            console.log(GroupOrganizer);
-
-        } else {
-            //unlocked
-            lockBtn.textContent = "Lock";
-            divUserLocked.innerHTML = "";
-            addTextBtn.style.display = "none";
-            GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
-        }
-
-        //event listner for locking the item
-        lockBtn.addEventListener("click", function () {
-
-            
-
-            //call lockUI
-
-            if (divUserLocked.innerHTML == "") {
-                //not locked, lock now
-                divUserLocked.innerHTML = "locked by " + document.getElementById("username").value;
-                lockBtn.textContent = "Unlock";
-
-                if (change == 0) {
-                    //update data structure
-                    GroupOrganizer = unlockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
-                }
-                
-                addTextBtn.style.display = "block";
-                //var jsonString2 = JSON.stringify(GroupOrganizer);
-                
-            } else {
-                //unlock:
-                lockBtn.textContent = "Lock";
-                divUserLocked.innerHTML = "";
-                addTextBtn.style.display = "none";
-
-                if (change == 0) {
-                    //update data structure
-                    GroupOrganizer = lockItem(GroupOrganizer, currentGroupName, newItem, document.getElementById("username").value);
-                }
-                //var jsonString2 = JSON.stringify(GroupOrganizer);
-                
-            }
-
-        });
-
-
-        divItemTitle.appendChild(lockBtn);
-
-
+        
 
         // Adding event listener for Add Text button so the user can add text to the item
         addTextBtn.addEventListener("click", function (event) {
@@ -393,8 +341,14 @@
         });
         //event listener for the submit button for adding text
 
+        //add to the itemArea
+        document.getElementById("itemArea").appendChild(divItem);
+        //add to structure:
+        if (change == 0) {
+            addItem(currentGroupName, newItem, owner);
+        }
 
-
+        //event listner for text submit button
         document.getElementById("loadTextBtn").addEventListener("click", function (event) {
             //hide the form
             document.getElementById("invisText").style.display = "none";
@@ -411,32 +365,72 @@
                 //add to datastructure:
                 var e = document.getElementById("groups")
                 var currentGroupName = e.options[e.selectedIndex].text;
-                console.log("change" + change);
-                if (change == 0) {
-                    GroupOrganizer = addText(GroupOrganizer, currentGroupName, newItem, itemText.textContent);
-                }
+                addText(currentGroupName, newItem, itemText.textContent);
                 
             }
-
-
-            //print it out:
-            //var jsonString2 = JSON.stringify(GroupOrganizer);
-            
         });
 
         //divItem.appendChild(textInput);
         divItem.appendChild(addTextBtn);
 
-        //add to the itemArea
-        document.getElementById("itemArea").appendChild(divItem);
+        //check if already locked:
+        if (locked == "yes") {
+            //locked
 
-        console.log("change add item:" + change);
-        if (change == 0) {
-            GroupOrganizer = addItem(GroupOrganizer, currentGroupName, newItem, owner);
+            divUserLocked.innerHTML = "locked by " + modifyingUser;
+            lockBtn.textContent = "Unlock";
+
+            //check if the modifying user is the same user from the datastructure
+            //var modUser = getModUser(currentGroupName, newItem);
+
+
+            if (modUser == document.getElementById("username").value) {
+                lockBtn.style.display = "block";
+                addTextBtn.style.display = "block";
+            } else { lockBtn.style.display = "none"; }
+
+
+            //groupOrganizer = lockItem(groupOrganizer, currentGroupName, newItem, modifyingUser);
+
+            lockItem(currentGroupName, newItem, modifyingUser);
+
+        } else {
+            //unlocked
+            lockBtn.textContent = "Lock";
+            divUserLocked.innerHTML = "";
+            addTextBtn.style.display = "none";
+            unlockItem(currentGroupName, newItem, modifyingUser);
         }
-        //print it out:
-        //var jsonString2 = JSON.stringify(GroupOrganizer);
-        
+
+        //event listner for locking the item
+        lockBtn.addEventListener("click", function () {
+
+            //call lockUI
+
+            if (divUserLocked.innerHTML == "") {
+                //not locked, lock now
+                divUserLocked.innerHTML = "locked by " + document.getElementById("username").value;
+                lockBtn.textContent = "Unlock";
+                addTextBtn.style.display = "block"; //show the addText button
+
+                //update data structure
+                lockItem(currentGroupName, newItem, document.getElementById("username").value);
+                
+
+            } else {
+                //unlock:
+                lockBtn.textContent = "Lock";
+                divUserLocked.innerHTML = "";
+                addTextBtn.style.display = "none";  //hide the addText button
+
+                
+                //update data structure
+                
+                unlockItem(currentGroupName, newItem, document.getElementById("username").value);
+                //var jsonString2 = JSON.stringify(groupOrganizer);
+            }
+        });
+        divItemTitle.appendChild(lockBtn);
         //serverUpdate();
     }
 
@@ -501,15 +495,14 @@
                             //add to datastructure:
                             
                             if (change == 0) {
-                                GroupOrganizer = addText(GroupOrganizer, currentGroupName, itemName, texts[k]);
+                                addText(currentGroupName, itemName, texts[k]);
                             }
                             
                         }
                     }
                 }
             }
-        }
-        
+        }        
     }
 
 
@@ -568,9 +561,9 @@
         //change selected group
         
         
-        GroupOrganizer = selectGroup(GroupOrganizer, currentGroupName)
+        selectGroup(currentGroupName)
 
-        jsonString = JSON.stringify(GroupOrganizer);
+        jsonString = JSON.stringify(groupOrganizer);
         
 
         //clear items
@@ -585,25 +578,25 @@
         
 
         //populate the selected group:
-        for (var i = 0; i < GroupOrganizer.length; i++) {
+        for (var i = 0; i < groupOrganizer.length; i++) {
             
-            groupName = GroupOrganizer[i].groupName;
-            if (GroupOrganizer[i].selected == true) {
-                Itemlength = GroupOrganizer[i].items.length;
+            groupName = groupOrganizer[i].groupName;
+            if (groupOrganizer[i].selected == true) {
+                Itemlength = groupOrganizer[i].items.length;
                 
                 for (var j = 0; j < Itemlength; j++) {
                     
 
-                    itemName = (GroupOrganizer[i].items[j].itemName);
+                    itemName = (groupOrganizer[i].items[j].itemName);
 
-                    vis = (GroupOrganizer[i].items[j].visible);
-                    modUser = (GroupOrganizer[i].items[j].modifyingUserName);
-                    owner = (GroupOrganizer[i].items[j].ownerName);
-                    locked = (GroupOrganizer[i].items[j].locked);
-                    texts = (GroupOrganizer[i].items[j].texts);
+                    vis = (groupOrganizer[i].items[j].visible);
+                    modUser = (groupOrganizer[i].items[j].modifyingUserName);
+                    owner = (groupOrganizer[i].items[j].ownerName);
+                    locked = (groupOrganizer[i].items[j].locked);
+                    texts = (groupOrganizer[i].items[j].texts);
 
                     
-                    change = 1;
+                    change = 1; //if change from dropdown
                     //add items:
                     addItemToUI(groupName, itemName, owner, modUser, locked, change);
                     //add texts
@@ -620,11 +613,12 @@
     temp =       '[{ "groupName": "Sports", "selected": true, "items": [{ "itemName": "Soccer", "ownerName":"Sediket","modifyingUserName":"","visible":"no","locked":"no","texts":["ball game","big field"]},{"itemName":"Baseball","ownerName":"Sediket","modifyingUserName":"","visible":"no","locked":"no","texts":["hit ball with stick","catch ball with hands"]},{"itemName":"basketball","ownerName":"Sediket","modifyingUserName":"","visible":"no","locked":"no","texts":["ball game with hands","shoot ball in basket","have fun"]},{"itemName":"asdf","ownerName":"Bradley","modifyingUserName":"","visible":"no","locked":"no","texts":[]}]},{"groupName":"asdf","selected":false,"items":[]}]'
     jsonObject = JSON.parse(sampleJSON);
 
-    rebuild(jsonObject);
+    
 
+    //rebuild(jsonObject);
+    
     //rebuild
     function rebuild(jsonObject) {
-        
         for (var i = 0; i < jsonObject.length; i++) {
             //add to groups ui
             
@@ -637,7 +631,10 @@
             groupName = jsonObject[i].groupName;
 
             if (jsonObject[i].selected == true) {
-                makeGroupSelectedUI(jsonObject[i].groupName);
+                //add items to ui and datastructure
+                makeGroupSelectedUI(groupName);
+                
+
                 for (var j = 0; j < jsonObject[i].items.length; j++) {
                     itemName = (jsonObject[i].items[j].itemName);
                     vis = (jsonObject[i].items[j].visible);
@@ -646,7 +643,7 @@
                     locked = (jsonObject[i].items[j].locked);
                     texts = (jsonObject[i].items[j].texts);
 
-                    change = 0;
+                    change = 0; //if change from dropdown
                     //add items:
 
                     addItemToUI(groupName, itemName, owner, modUser, locked, change);
@@ -654,7 +651,9 @@
                     addTextToUI(groupName, itemName, texts, change);
                 }
             } else {
+                //add items not under the selected group only to dataStructure
                 //add to datastructure
+                deSelectGroup(groupName);
                 for (var j = 0; j < jsonObject[i].items.length; j++) {
                     itemName = (jsonObject[i].items[j].itemName);
                     vis = (jsonObject[i].items[j].visible);
@@ -663,16 +662,26 @@
                     locked = (jsonObject[i].items[j].locked);
                     texts = (jsonObject[i].items[j].texts);
 
+                    //add items
+                    addItem(groupName, itemName, owner);
 
-                    GroupOrganizer = addItem(GroupOrganizer, groupName, itemName, owner);
+                    //add locks
+                    if (locked == "yes") {
+                        lockItem(groupName, itemName, modUser)
+                    }
 
-                    GroupOrganizer = addText(GroupOrganizer, groupName, itemName, texts);
+                    //add texts
+                    textsLen = texts.length
+                    for (k = 0; k < textsLen; k++) {
+                        addText(groupName, itemName, texts[k]);
+                    }
 
                 }
 
 
             }
         }
+        console.log(JSON.stringify(groupOrganizer));
     }
 
     function makeGroupSelectedUI(groupToBeSelected) {
