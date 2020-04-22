@@ -137,7 +137,7 @@
     }
 
     connection.on("ReceiveMessage", function (user, jsonString) {
-        
+        console.log("Recevied: "+jsonString);
 
         //remove everything
 
@@ -266,7 +266,9 @@
 
     //groupName, itemName, owner, modUser, locked
     //function to add item to UI
-    function addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked, change) {
+    function addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked, vis, change) {
+        CurrentLoggedInUser = document.getElementById("username").value;
+
         //new divItem and title
         
         var divItem = document.createElement("div"); //new divItem
@@ -282,31 +284,6 @@
         divUserLocked.style.textAlign = "center";
         divItem.prepend(divUserLocked);
 
-        // creating the visibility checkbox
-        var visibleLbl = document.createElement("label");
-        visibleLbl.textContent = "Visible ";
-        var visibleBtn = document.createElement("input");
-        visibleBtn.type = "checkbox";
-
-        // adding event listener for visibility checkbox so the user can choose whether the item is visible for others or not.
-        visibleBtn.addEventListener("change", function () {
-            if (this.checked) {
-                owner = getOwner(currentGroupName, divItemTitle);
-                if (owner == user) {
-                    //owner
-                    divItem.style.display = "block";
-                } else {
-                    //not owner
-                    divItem.style.display = "none";
-                }
-            } else {
-                //display for evryone
-                divItem.style.display = "block";
-            }
-        });
-        divItem.appendChild(visibleLbl);
-        divItem.appendChild(visibleBtn);
-
         // creating the Add Text button for each item
         var addTextBtn = document.createElement("button");
         addTextBtn.innerHTML = "Add Text";
@@ -320,7 +297,6 @@
         lockBtn.style.marginTop = "-3px";
         lockBtn.style.marginRight = "-3px";
 
-        
 
         // Adding event listener for Add Text button so the user can add text to the item
         addTextBtn.addEventListener("click", function (event) {
@@ -345,8 +321,75 @@
         document.getElementById("itemArea").appendChild(divItem);
         //add to structure:
         if (change == 0) {
-            addItem(currentGroupName, newItem, owner);
+            addItem(currentGroupName, newItem,vis, owner);
         }
+        
+        if (owner == CurrentLoggedInUser) {
+            // creating the visibility checkbox for the owner
+            var visibleLbl = document.createElement("label");
+            visibleLbl.textContent = "Visible ";
+            var visibleBtn = document.createElement("input");
+            visibleBtn.type = "checkbox";
+
+            // adding event listener for visibility checkbox so the user can choose whether the item is visible for others or not.
+            visibleBtn.addEventListener("change", function () {
+                if (this.checked) {
+                    
+                    makeVisible(currentGroupName, newItem);
+                    //owner = getOwner(currentGroupName, divItemTitle);
+                    //console.log("owner " + owner + " currentUser: " + CurrentLoggedInUser);
+                    divItem.style.display = "block";
+
+                } else {
+                    //display for evryone
+                    
+                    makeinVisible(currentGroupName, newItem);
+                }
+            });
+
+            //making the item visible or invisible on rebuild:
+            //console.log("vis:" + vis);
+            if (vis == "no") {
+                //always display for owner:
+                divItem.style.display = "block";
+                //hide it
+                //unchecked
+                visibleBtn.checked = false;
+                //update datastructure
+                makeinVisible(currentGroupName, newItem);
+                
+            } else {
+                //checked:
+                visibleBtn.checked = true;
+                //show it:
+                //should be visible, modify datastructure
+                makeVisible(currentGroupName, newItem);
+            }
+            //console.log(JSON.stringify(groupOrganizer));
+
+            divItem.appendChild(visibleLbl);
+            divItem.appendChild(visibleBtn);
+
+        } else {
+            //not the owner:
+            if (vis == "no") {
+                //hide it
+                //unchecked
+               //update datastructure
+                makeinVisible(currentGroupName, newItem);
+                divItem.style.display = "none";
+            } else {
+                //checked: 
+                //show it:
+                //should be visible, modify datastructure
+                makeVisible(currentGroupName, newItem);
+                divItem.style.display = "block";
+            }
+        }
+
+        
+
+
 
         //event listner for text submit button
         document.getElementById("loadTextBtn").addEventListener("click", function (event) {
@@ -366,7 +409,6 @@
                 var e = document.getElementById("groups")
                 var currentGroupName = e.options[e.selectedIndex].text;
                 addText(currentGroupName, newItem, itemText.textContent);
-                
             }
         });
 
@@ -383,12 +425,10 @@
             //check if the modifying user is the same user from the datastructure
             //var modUser = getModUser(currentGroupName, newItem);
 
-
             if (modUser == document.getElementById("username").value) {
                 lockBtn.style.display = "block";
                 addTextBtn.style.display = "block";
             } else { lockBtn.style.display = "none"; }
-
 
             //groupOrganizer = lockItem(groupOrganizer, currentGroupName, newItem, modifyingUser);
 
@@ -416,7 +456,6 @@
                 //update data structure
                 lockItem(currentGroupName, newItem, document.getElementById("username").value);
                 
-
             } else {
                 //unlock:
                 lockBtn.textContent = "Lock";
@@ -455,9 +494,10 @@
                 //add to UI
                 modifyingUser = document.getElementById("username").value;
                 locked = "no";
+                vis = "no";
                 change = 0; //add to ui
                 
-                addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked,change);
+                addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked,vis,change);
 
                             
                 //hide the additem form and background
@@ -596,7 +636,7 @@
                     
                     change = 1; //if change from dropdown
                     //add items:
-                    addItemToUI(groupName, itemName, owner, modUser, locked, change);
+                    addItemToUI(groupName, itemName, owner, modUser, locked, vis, change);
                     //add texts
                     
                     addTextToUI(groupName, itemName, texts, change);
@@ -607,7 +647,7 @@
         
     });
 
-    sampleJSON = '[{ "groupName": "Sports", "selected": true, "items": [{ "itemName": "Soccer", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "yes", "texts": ["ball game", "big field"] }, { "itemName": "Baseball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "no", "texts": ["hit ball with stick", "catch ball with hands"] }, { "itemName": "basketball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "no", "locked": "no", "texts": ["ball game with hands", "shoot ball in basket", "have fun"] }] },{"groupName":"asdf","selected":false,"items":[]}]';
+    sampleJSON = '[{ "groupName": "Sports", "selected": true, "items": [{ "itemName": "Soccer", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "yes", "locked": "yes", "texts": ["ball game", "big field"] }, { "itemName": "Baseball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "yes", "locked": "no", "texts": ["hit ball with stick", "catch ball with hands"] }, { "itemName": "basketball", "ownerName": "Sediket", "modifyingUserName": "Sediket", "visible": "yes", "locked": "no", "texts": ["ball game with hands", "shoot ball in basket", "have fun"] }] },{"groupName":"asdf","selected":false,"items":[]}]';
     
     jsonObject = JSON.parse(sampleJSON);
 
@@ -643,7 +683,7 @@
                     change = 0; //if change from dropdown
                     //add items:
 
-                    addItemToUI(groupName, itemName, owner, modUser, locked, change);
+                    addItemToUI(groupName, itemName, owner, modUser, locked, vis, change);
                     //add texts
                     addTextToUI(groupName, itemName, texts, change);
                 }
@@ -660,7 +700,7 @@
                     texts = (jsonObject[i].items[j].texts);
 
                     //add items
-                    addItem(groupName, itemName, owner);
+                    addItem(groupName, itemName,vis ,owner);
 
                     //add locks
                     if (locked == "yes") {

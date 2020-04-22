@@ -117,13 +117,13 @@ function checkGroupExistsDS(groupName) {
 
 
 
-function addItem(groupName, itemName, ownerName) {
+function addItem(groupName, itemName, vis,ownerName) {
     
     newItem = {
         itemName: itemName,
         ownerName: ownerName,
         modifyingUserName: "",
-        visible: "no",
+        visible: vis,
         locked:"no",
         texts: [],
     }
@@ -220,12 +220,11 @@ function unlockItem(groupName, itemName) {
 }
 
 //make item visible
-function makeVisible(groupName, itemName, userName) {
+function makeVisible(groupName, itemName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
-                if (groupOrganizer[i].items[j].itemName == itemName &&
-                    groupOrganizer[i].items[j].ownerName == userName) {
+                if (groupOrganizer[i].items[j].itemName == itemName) {
                     
                     groupOrganizer[i].items[j].visible = "yes";
                 }
@@ -236,12 +235,11 @@ function makeVisible(groupName, itemName, userName) {
 }
 
 //make item invisible
-function makeinVisible(groupName, itemName, userName) {
+function makeinVisible(groupName, itemName) {
     for (var i = 0; i < groupOrganizer.length; i++) {
         if (groupOrganizer[i].groupName == groupName) {
             for (var j = 0; j < groupOrganizer[i].items.length; j++) {
-                if (groupOrganizer[i].items[j].itemName == itemName &&
-                    groupOrganizer[i].items[j].ownerName == userName) {
+                if (groupOrganizer[i].items[j].itemName == itemName) {
                     groupOrganizer[i].items[j].visible = "no";
                 }
             }
