@@ -47,15 +47,15 @@
         </div>
 
 
-        <div class="content" id="content" style="display: none">
+        <div class="content" id="content" style="display: none; height: 100%;">
             <label id="jsonTest"></label>
             <div class="addItem">
                 <input type="button" value="Add an Item" id="addItemBtn">
             </div>
 
-            <div id="itemArea">
+            <div id="itemArea" class="row">
 
-                
+
 
             </div>
 
@@ -269,6 +269,8 @@
     function addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked, vis, change) {
         CurrentLoggedInUser = document.getElementById("username").value;
 
+     
+
         //new divItem and title
         
         var divItem = document.createElement("div"); //new divItem
@@ -278,11 +280,20 @@
         divItemTitle.innerHTML = "<span>" + newItem + "</span>";
         divItem.appendChild(divItemTitle);
 
+      
+
         //user div for who locks the item
         var divUserLocked = document.createElement("div"); //new divItem for the current locked user
         divUserLocked.style.color = "red";
         divUserLocked.style.textAlign = "center";
         divItem.prepend(divUserLocked);
+
+          // create btn remove item
+        var btnRemoveItem = document.createElement("button");
+        btnRemoveItem.textContent = "X";
+        btnRemoveItem.style.marginBottom = "10px";
+        btnRemoveItem.style.display = "none";
+        divItem.append(btnRemoveItem);
 
         // creating the Add Text button for each item
         var addTextBtn = document.createElement("button");
@@ -297,6 +308,7 @@
         lockBtn.style.marginTop = "-3px";
         lockBtn.style.marginRight = "-3px";
 
+ 
 
         // Adding event listener for Add Text button so the user can add text to the item
         addTextBtn.addEventListener("click", function (event) {
@@ -388,7 +400,14 @@
         }
 
         
+                // event listener for removing item
+        btnRemoveItem.addEventListener("click", function () {
 
+            divItem.remove();
+            removeItem(currentGroupName, newItem);
+            console.log(JSON.stringify(groupOrganizer));
+            serverUpdate();
+        });
 
 
         //event listner for text submit button
@@ -428,7 +447,10 @@
             if (modUser == document.getElementById("username").value) {
                 lockBtn.style.display = "block";
                 addTextBtn.style.display = "block";
-            } else { lockBtn.style.display = "none"; }
+                btnRemoveItem.style.display = "block";
+            } else {
+                lockBtn.style.display = "none";
+            }
 
             //groupOrganizer = lockItem(groupOrganizer, currentGroupName, newItem, modifyingUser);
 
@@ -439,8 +461,11 @@
             lockBtn.textContent = "Lock";
             divUserLocked.innerHTML = "";
             addTextBtn.style.display = "none";
+            btnRemoveItem.style.display = "none";
             unlockItem(currentGroupName, newItem, modifyingUser);
         }
+
+
 
         //event listner for locking the item
         lockBtn.addEventListener("click", function () {
@@ -452,6 +477,7 @@
                 divUserLocked.innerHTML = "locked by " + document.getElementById("username").value;
                 lockBtn.textContent = "Unlock";
                 addTextBtn.style.display = "block"; //show the addText button
+                btnRemoveItem.style.display = "block";
 
                 //update data structure
                 lockItem(currentGroupName, newItem, document.getElementById("username").value);
@@ -461,7 +487,7 @@
                 lockBtn.textContent = "Lock";
                 divUserLocked.innerHTML = "";
                 addTextBtn.style.display = "none";  //hide the addText button
-
+                btnRemoveItem.style.display = "none";
                 
                 //update data structure
                 
@@ -527,6 +553,7 @@
                     var divTitle = items[i].children[1].children[0].innerHTML;
                     if (divTitle == itemName) {
                         //add the texts
+
                         textsLen = texts.length
                         for (k = 0; k < textsLen; k++) {
                             var itemText = document.createElement("div");
