@@ -87,10 +87,9 @@ function checkGroupExistsDD(DD,newText) {
 //check if the item already exists:
 function checkItemExists(newText) {
     var items = document.getElementById("itemArea").children;
-     
     for (var i = 0; i < items.length; i++) {
-        if (typeof (items[i].children[1].children[0]) != "undefined") {
-            var divTitle = items[i].children[1].children[0].innerHTML;
+        if (typeof (items[i].children[2].children[0]) != "undefined") {
+            var divTitle = items[i].children[2].children[0].innerHTML;
 
             if (divTitle == newText) {
                 return true;

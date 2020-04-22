@@ -156,7 +156,7 @@
         emptyDataStructure();
 
         //remove event listeners
-        console.log("Recevied: " + jsonString);
+        //console.log("Recevied: " + jsonString);
 
         //rebuild everything
         jsonObject = JSON.parse(jsonString);
@@ -277,7 +277,7 @@
         currentGroupName = evt.currentTarget.currentGroupName;
         newItem = evt.currentTarget.newItem;
         divItem = evt.currentTarget.divItem;
-        console.log(currentGroupName + " " + newItem + " " + divItem);
+        //console.log(currentGroupName + " " + newItem + " " + divItem);
         //hide the form
         document.getElementById("invisText").style.display = "none";
         document.getElementById("addTextForm").style.display = "none";
@@ -467,7 +467,7 @@
 
             divItem.remove();
             removeItem(currentGroupName, newItem);
-            console.log(JSON.stringify(groupOrganizer));
+            //console.log(JSON.stringify(groupOrganizer));
             serverUpdate();
         });
 
@@ -555,10 +555,11 @@
     document.getElementById("loadItemBtn").addEventListener("click", function (event) {
         //check that the text field is not empty
         if (!document.getElementById("newItemName").value == "") {
-            
+            console.log(JSON.stringify(groupOrganizer));
             //check that the item doesn't exist
             if (checkItemExists(document.getElementById("newItemName").value)) {
                 //already exists:
+                
                 document.getElementById("newItemMessage").style.color = "red";
                 document.getElementById("newItemMessage").innerHTML = "Already Exists";
             } else {
@@ -808,7 +809,7 @@
     }
 
     function removeEventListeners() {
-        //document.getElementById("loadTextBtn").removeEventListener("click", listener, true);
+        document.getElementById("loadTextBtn").removeEventListener("click", listener, true);
         
     }
 
