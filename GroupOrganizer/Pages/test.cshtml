@@ -129,6 +129,7 @@
 
     function serverUpdate() {
         
+        
         jsonString = JSON.stringify(groupOrganizer);
 
         connection.invoke("SendMessage", document.getElementById("username").value, jsonString).catch(function (err) {
@@ -137,18 +138,25 @@
     }
 
     connection.on("ReceiveMessage", function (user, jsonString) {
-        console.log("Recevied: "+jsonString);
-
+  
         //remove everything
+
+
+        removeEventListeners();
 
         //remove dropdown items
         removeGroups();
 
+
+        
         //remove items:
         removeItems();
 
         //clear data structure:
         emptyDataStructure();
+
+        //remove event listeners
+        console.log("Recevied: " + jsonString);
 
         //rebuild everything
         jsonObject = JSON.parse(jsonString);
@@ -264,6 +272,59 @@
         
     }
 
+    function listener(evt) {
+        //alert(evt.currentTarget.currentGroupName);
+        currentGroupName = evt.currentTarget.currentGroupName;
+        newItem = evt.currentTarget.newItem;
+        divItem = evt.currentTarget.divItem;
+        console.log(currentGroupName + " " + newItem + " " + divItem);
+        //hide the form
+        document.getElementById("invisText").style.display = "none";
+        document.getElementById("addTextForm").style.display = "none";
+
+        var itemText = document.createElement("div");
+        itemText.textContent = document.getElementById("newTextName").value;
+
+        
+
+        //find item
+        //item to look for:
+        itemName = document.getElementById("newTextName").name
+        divItem = findItemInUI(itemName);
+        //add text to item
+        divItem.appendChild(itemText);
+        addText(currentGroupName, itemName, itemText.textContent);
+
+
+        //check its the right calling item
+        if (newItem == document.getElementById("newTextName").name) {
+            //add to the item UI
+        //    divItem.appendChild(itemText);
+
+            //add to datastructure:
+            var e = document.getElementById("groups")
+            var currentGroupName = e.options[e.selectedIndex].text;
+            
+        }
+    }
+
+
+
+
+    function findItemInUI(lookingFor) {
+        var items = document.getElementById("itemArea").children;
+        for (var i = 0; i < items.length; i++) {
+            if (typeof (items[i].children[2].children[0]) != "undefined") {
+                var divTitle = items[i].children[2].children[0].innerHTML;
+                if (divTitle == lookingFor) {
+                    return items[i];
+                }
+                
+            }
+        }
+    }
+
+
     //groupName, itemName, owner, modUser, locked
     //function to add item to UI
     function addItemToUI(currentGroupName, newItem, owner, modifyingUser, locked, vis, change) {
@@ -293,7 +354,8 @@
         btnRemoveItem.textContent = "X";
         btnRemoveItem.style.marginBottom = "10px";
         btnRemoveItem.style.display = "none";
-        divItem.append(btnRemoveItem);
+        btnRemoveItem.style.cssFloat = "left";
+        divItem.prepend(btnRemoveItem);
 
         // creating the Add Text button for each item
         var addTextBtn = document.createElement("button");
@@ -410,27 +472,17 @@
         });
 
 
+
+
+        tempElement = document.getElementById("loadTextBtn");
+        tempElement.currentGroupName = currentGroupName;
+        tempElement.newItem = newItem;
+        tempElement.divItem = divItem;
+
+
         //event listner for text submit button
-        document.getElementById("loadTextBtn").addEventListener("click", function (event) {
-            //hide the form
-            document.getElementById("invisText").style.display = "none";
-            document.getElementById("addTextForm").style.display = "none";
-
-            var itemText = document.createElement("div");
-            itemText.textContent = document.getElementById("newTextName").value;
-
-            //check its the right calling item
-            if (newItem == document.getElementById("newTextName").name) {
-                //add to the item UI
-                divItem.appendChild(itemText);
-
-                //add to datastructure:
-                var e = document.getElementById("groups")
-                var currentGroupName = e.options[e.selectedIndex].text;
-                addText(currentGroupName, newItem, itemText.textContent);
-            }
-        });
-
+        tempElement.addEventListener("click", listener, true);
+        
         //divItem.appendChild(textInput);
         divItem.appendChild(addTextBtn);
 
@@ -549,8 +601,8 @@
             //find the item:
             var items = document.getElementById("itemArea").children;
             for (var i = 0; i < items.length; i++) {
-                if (typeof (items[i].children[1].children[0]) != "undefined") {
-                    var divTitle = items[i].children[1].children[0].innerHTML;
+                if (typeof (items[i].children[2].children[0]) != "undefined") {
+                    var divTitle = items[i].children[2].children[0].innerHTML;
                     if (divTitle == itemName) {
                         //add the texts
 
@@ -753,6 +805,11 @@
                 select.options[i].selected = true;
             }
         }
+    }
+
+    function removeEventListeners() {
+        //document.getElementById("loadTextBtn").removeEventListener("click", listener, true);
+        
     }
 
 </script>
